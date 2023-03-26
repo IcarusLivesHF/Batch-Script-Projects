@@ -6,5 +6,5 @@
         For example: set "revisionRequired=3.30.1"
         You will need the required Revision or LATER</p>
 <p>You can find Library.bat <a href="https://github.com/IcarusLivesHF/Windows-Batch-Library/blob/master/Library.bat">here</a>.</p>
+<p>For documention and usage of Library.bat, please view <a href="https://raw.githubusercontent.com/IcarusLivesHF/Windows-Batch-Library/master/documentation.bat">here</a>.</p>
 </pre>
-
