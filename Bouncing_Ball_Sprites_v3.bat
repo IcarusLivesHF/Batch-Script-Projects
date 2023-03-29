@@ -2,7 +2,7 @@
 
 set "revisionRequired=3.30.2"
 (%(:?=Library% && (call :revision)||(%failedLibrary%))2>nul
-	call :stdlib /w:150 /h:60 /fs:15 /spr
+	call :stdlib /w:150 /h:60 /fs:5 /spr
 	call :misc&call :macros
 %)%  && (cls&goto :setup)
 :setup
