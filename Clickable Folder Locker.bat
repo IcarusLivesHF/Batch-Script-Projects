@@ -26,15 +26,14 @@ if not exist "%hiddenLocker_Name%" md "%hiddenLocker_Name%"
 rem -----------------------------------------------------------
 rem Simple loop
 :main
+set "foundLocker=False"
 for /f "tokens=5" %%a in ('dir /a:h ^| findstr "<DIR>"') do (
 	if "%%~a" equ "%hiddenLocker_Name%" (
-		set "hidden=True"
-	) else (
-		set "hidden=False"
+		set "foundLocker=True"
 	)
 )
 set "inv1=" & set "inv2="
-if "!hidden!" neq "False" (
+if "!foundLocker!" neq "False" (
 	set "status=Locked"
 	set "statusColor=%color[2]%"
 	set "inv2=%\e%7m"
