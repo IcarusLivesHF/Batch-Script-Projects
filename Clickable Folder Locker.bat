@@ -2,15 +2,16 @@
 
 set "revisionRequired=4.0.1"
 (%(:?=Library% && (call :revision)||(%failedLibrary%))2>nul
-	call :StdLib /w:20 /h:10 /fs:26 /3rd /util
+	call :StdLib /w:20 /h:10 /fs:26 /3rd /util /e /c
 %)%  && (cls&goto :setup)
+:::Written By IcarusLives
 :setup
-
+%license% "Written By IcarusLives"
 set "hiddenLocker_Name=locker"
 
 rem Make buttons ----------------------------------------------
-call :createButton 2 8  Show
-call :createButton 12 8 Hide
+call :createButton 3 6  Show
+call :createButton 11 6 Hide
 set "c=0" & for %%a in (5cdb5c e76f51) do (
 	set /a "c+=1"
 	%hexToRGB% %%a
@@ -23,6 +24,15 @@ cd\
 cd "%userprofile%\desktop"
 
 if not exist "%hiddenLocker_Name%" md "%hiddenLocker_Name%"
+rem -----------------------------------------------------------
+rem make the border for yeshi
+for /l %%a in (3,1,%wid%) do set "tb=!tb!%border[hori]%"
+set "top=%corner[NW]%%tb%%corner[NE]%!cursor[L]:?=%wid%!%cursor[D]:?=1%"
+set /a "wm2=wid - 2"
+set "fill=!fill!!cursor[R]:?=%wm2%!"
+for /l %%a in (0,1,%hei%) do set "edges=!edges!%border[vert]%%fill%%border[vert]%!cursor[L]:?=%wid%!%cursor[D]:?=1%"
+set "bottom=%corner[SW]%%tb%%corner[SE]%"
+set "box=%top%%edges%%bottom%%capit%"
 rem -----------------------------------------------------------
 rem Simple loop
 :main
@@ -42,7 +52,7 @@ if "!foundLocker!" neq "False" (
 	set "statusColor=%color[1]%"
 	set "inv1=%\e%7m"
 )
-echo %\c%!inv1!%button[1]%!inv2!%button[2]%%\e%4;2HStatus: %\e%3!statusColor!!status!%\e%0m
+echo %\c%!inv1!%button[1]%!inv2!%button[2]%%\e%4;2HStatus: %\e%3!statusColor!!status!%\e%0m%\e%2;0H%box%
 
 %getMouseXY%
 
