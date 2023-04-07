@@ -12,23 +12,24 @@ call :sprites
 %BVector% chaser
 set /a "centx=wid/2","centy=hei/2"
 set "points=0"
-set "pacmanAnimationSpeed=14"
-set "pacmanSpeed=4"
+set "pacmanAnimationSpeed=7"
+set "pacmanDefaultSpeed=3"
+set /a "pacmanSpeed=pacmanDefaultSpeed"
 set "pacmanHealth=1"
 set "pacman_predetorMode_dur=300"
-set "pacman_superSpeed_dur=150"
+set "pacman_superSpeed_dur=100"
 set "pacman_predetorMode=False"
 set "pacman_superSpeedMode=False"
 set /a "r=!random! %% 4" & (if !r! equ 0 (set "Key=Right") else if !r! equ 1 (set "Key=Left") else if !r! equ 2 (set "Key=Up") else if !r! equ 3 (set "Key=Down"))
-set "chaserAnimationSpeed=100"
-set "chaserSpeed=8"
+set "chaserAnimationSpeed=30"
+set /a "chaserSpeed=pacmanSpeed * 2 - 1"
 set "chaserAnimatedFrame=0"
 set /a "dotAppearanceTime=200", "totalDots=startDot=1"
 set "cherryAppearanceTime=2000"
 set "shieldAppearanceTime=300"
 set "powerUpAppearanceTime=400"
-set "shieldAppearanceChance=25"
-set "powerUpAppearanceChance=25"
+set "shieldAppearanceChance=35"
+set "powerUpAppearanceChance=35"
 set "cherryBool=False"
 set "shieldBool=False"
 set "powerUpBool=False"
@@ -82,7 +83,7 @@ if "!skipIntro!" neq "True" (
 		if "!shieldBool!" neq "True" (
 			2>nul set /a "%chance:x=shieldAppearanceChance%" && (
 				2>nul set /a "%every:x=shieldAppearanceTime%" && (
-					set /a "shield_x=!random! %% wid", "shield_y=!random! %% hei"
+					set /a "shield_x=!random! %% (wid - 10) + 5", "shield_y=!random! %% (hei - 10) + 5"
 					set /a "totalShields+=1"
 					set "shieldBool=True"
 				)
@@ -104,7 +105,7 @@ if "!skipIntro!" neq "True" (
 		if "!powerUpBool!" neq "True" (
 			2>nul set /a "%chance:x=powerUpAppearanceChance%" && (
 				2>nul set /a "%every:x=powerUpAppearanceTime%" && (
-					set /a "powerUp_x=!random! %% wid", "powerUp_y=!random! %% hei"
+					set /a "powerUp_x=!random! %% (wid - 10) + 5", "powerUp_y=!random! %% (hei - 10) + 5"
 					set /a "totalpowerUps+=1"
 					set "powerUpBool=True"
 				)
@@ -127,14 +128,14 @@ if "!skipIntro!" neq "True" (
 			if !frameCount! gtr !pacman_superSpeed_duration! (
 				set "pacman_superSpeedMode=False"
 				set "powerUpBool=False"
-				set "pacmanSpeed=5"
+				set /a "pacmanSpeed=pacmanDefaultSpeed"
 				set "pacman_superSpeed_duration="
 			)
 		)
 		REM Random Cherries-----------------------------------------------------------------------------------------
 		if "!cherryBool!" neq "True" (
 			2>nul set /a "%every:x=cherryAppearanceTime%" && (
-				set /a "cherry_x=!random! %% wid", "cherry_y=!random! %% hei"
+				set /a "cherry_x=!random! %% (wid - 8) + 4", "cherry_y=!random! %% (hei - 8) + 4"
 				set /a "totalCherries+=1"
 				set "cherryBool=True"
 			)
@@ -315,9 +316,9 @@ set    "pacman[Up][2]=[38;2;255;255;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7D
 set    "pacman[Up][3]=[38;2;255;255;0m[CÛÛ[CÛÛ[B[6DÛÛÛ[CÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
 REM ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 set        "chaser[0]=[38;5;10m.[38;5;9m[38;5;10m.[B[3D[38;5;12m[38;5;15m[38;5;12m[B[3D[38;5;10m.[38;5;12m[38;5;10m.[D[A[0m"
-set        "chaser[1]=[38;5;10m.[38;5;12m[38;5;10m.[B[3D[38;5;12m[38;5;15m[38;5;12m[B[3D[38;5;10m.[38;5;9m[38;5;10m.[D[A[0m"
+set        "chaser[1]=[38;5;10m[38;5;12m.[38;5;10m[B[3D[38;5;12m.[38;5;15m[38;5;12m.[B[3D[38;5;10m[38;5;9m.[38;5;10m[D[A[0m"
 set        "chaser[2]=[38;5;10m.[38;5;12m[38;5;10m.[B[3D[38;5;12m[38;5;15m[38;5;9m[B[3D[38;5;10m.[38;5;12m[38;5;10m.[D[A[0m"
-set        "chaser[3]=[38;5;10m.[38;5;12m[38;5;10m.[B[3D[38;5;9m[38;5;15m[38;5;12m[B[3D[38;5;10m.[38;5;12m[38;5;10m.[D[A[0m"
+set        "chaser[3]=[38;5;10m[38;5;12m.[38;5;10m[B[3D[38;5;9m.[38;5;15m[38;5;12m.[B[3D[38;5;10m[38;5;12m.[38;5;10m[D[A[0m"
 REM ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 set "cherry=[2C[38;2;97;138;61m_[B[3D[C[38;2;159;100;66m/[B[3D[38;2;255;0;0m°[38;2;255;0;0mÛ[B[2D[38;2;255;0;0mÛÛ[A[D[0m"
 set "shield=[38;5;12m'-'-'[B[5D[38;5;12m^|[38;5;7mÛSÛ[38;5;12m^|[B[5D[38;5;12m^|[38;5;7mÛÛÛ[38;5;12m^|[B[5D[38;5;12m\___/[3D[2A[0m" 
