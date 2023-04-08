@@ -176,9 +176,11 @@ if "!skipIntro!" neq "True" (
 		2>nul set /a "%every:x=chaserSpeed%" && (
 			set /a "chaser.x+=chaser.i", "chaser.y+=chaser.j"
 		)
-		2>nul set /a "%every:x=increaseChaserSpeedTime%" && (
-			2>nul set /a "%chance:x=increaseChaserSpeedChance%" && (
-				set /a "chaserSpeed-=1"
+		if !chaserSpeed! gtr 1 (
+			2>nul set /a "%every:x=increaseChaserSpeedTime%" && (
+				2>nul set /a "%chance:x=increaseChaserSpeedChance%" && (
+					set /a "chaserSpeed-=1"
+				)
 			)
 		)
 		
