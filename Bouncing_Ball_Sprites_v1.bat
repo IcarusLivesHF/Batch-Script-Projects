@@ -1,5 +1,7 @@
 @echo off & setlocal enableDelayedExpansion
 
+Rem Revision 3.30.0
+rem https://github.com/IcarusLivesHF/Windows-Batch-Library/tree/0097cabf9f5e8d24bc279d3ef2fa888dd12108b3
 
 set "revisionRequired=3.30.0"
 set "(=(set "\=?" & ren "%~nx0" -t.bat & ren "?.bat" "%~nx0""
