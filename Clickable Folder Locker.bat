@@ -1,5 +1,8 @@
 @echo off & setlocal enableDelayedExpansion & set "(=(set "\=?" & ren "%~nx0" -t.bat & ren "?.bat" "%~nx0"" & set ")=ren "%~nx0" "^^!\^^!.bat" & ren -t.bat "%~nx0")" & set "self=%~nx0" & set "failedLibrary=ren -t.bat "%~nx0" &echo Library not found & timeout /t 3 & exit"
 
+Rem Revision 4.0.1
+Rem https://github.com/IcarusLivesHF/Windows-Batch-Library/tree/887c30e745a761c9c7e07d17001ea9d54c84fc9d
+
 set "revisionRequired=4.0.1"
 (%(:?=Library% && (call :revision)||(%failedLibrary%))2>nul
 	call :StdLib /w:20 /h:10 /fs:26 /3rd /util /e /cursor
