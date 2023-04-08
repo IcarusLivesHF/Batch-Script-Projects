@@ -1,5 +1,8 @@
 @echo off & setlocal enableDelayedExpansion
 
+rem Revision 3.28.4
+rem https://github.com/IcarusLivesHF/Windows-Batch-Library/tree/056647416d358f5c6883e985e12373f90d4f169b
+
 set "revisionRequired=3.28.4"
 set  "openLib=(ren "%~nx0" temp.bat & ren "Library.bat" "%~nx0""
 set "closeLib=ren "%~nx0" "Library.bat" & ren temp.bat "%~nx0")" & set "self=%~nx0"
