@@ -82,6 +82,7 @@ if "!skipIntro!" neq "True" (
 				set "dotG[%%i]="
 				set "dotB[%%i]="
 				set /a "points+=1"
+				set /a "gotDots+=1"
 			)
 		)
 		REM Random Shields------------------------------------------------------------------------------------------
@@ -103,6 +104,7 @@ if "!skipIntro!" neq "True" (
 			set "shieldBool=False"
 			set "shield_x="
 			set "shield_y="
+			set /a "gotShields+=1"
 		)
 		REM PowerUps------------------------------------------------------------------------------------------------
 		if "!powerUpBool!" neq "True" (
@@ -125,6 +127,7 @@ if "!skipIntro!" neq "True" (
 			set "pacmanSpeed=1"
 			set /a "pacman_superSpeed_duration=frameCount + pacman_superSpeed_dur"
 			set "pacman_superSpeedMode=True"
+			set /a "gotPowerUps+=1"
 		)
 		if "!pacman_superSpeedMode!" neq "False" (
 			if !frameCount! gtr !pacman_superSpeed_duration! (
@@ -155,6 +158,7 @@ if "!skipIntro!" neq "True" (
 			set "pacman_predetorMode=True"
 			set /a "pacman_predetorMode_duration+=(frameCount + pacman_predetorMode_dur)"
 			set "frenzyMode=0"
+			set /a "gotCherries+=1"
 		)
 		REM -Chaser mechanics---------------------------------------------------------------------------------------
 		if "!pacman_predetorMode!" neq "True" (
@@ -194,14 +198,16 @@ if "!skipIntro!" neq "True" (
 		)
 		
 		%getDistance% this.x chaser.x this.y chaser.y chaserDistanceFromPlayer
-		if !chaserDistanceFromPlayer! leq 2 (
+		if !chaserDistanceFromPlayer! leq 3 (
 			set /a "chaser.x=5"
 			set /a "chaser.y=5"
 			if "!pacman_predetorMode!" neq "True" (
 				set /a "pacmanHealth-=1"
+				set /a "gotByChaser+=1"
 			) else (
 				set /a "pacmanHealth+=2"
 				set /a "points+=5"
+				set /a "gotChasers+=1"
 			)
 		)
 		
@@ -209,8 +215,24 @@ if "!skipIntro!" neq "True" (
 		
 		if !pacmanHealth! lss 1 (
 			cls
-			set /a "centx-=4"
-			echo %\e%!centy!;!centx!HGAME OVER%\e%2B%\e%9DPoints: !points!
+			set /a "centx-=8", "centy-=5"
+			for %%a in (
+				"Game Over"
+				""
+				"Points: !points!"
+				""
+				"Dots collected:   !gotDots!"
+				""
+				"Chasers Eaten:    !gotChasers!"
+				"Caught by Chaser: !gotByChaser!"
+				""
+				"Cherries Eaten:   !gotCherries!"
+				"PowerUps Eaten:   !gotPowerUps!"
+				"Shields  Eaten:   !gotShields!"
+			) do (
+				echo %\e%!centy!;!centx!H%%~a
+				set /a "centy+=1"
+			)
 			exit
 		)
 
