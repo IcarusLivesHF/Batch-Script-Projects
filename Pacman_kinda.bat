@@ -10,36 +10,61 @@ set "revisionRequired=4.0.4"
 %)%  && (cls&goto :setup)
 :setup
 
-call :sprites
 %BVector% this 7
 %BVector% chaser
-set /a "centx=wid/2","centy=hei/2"
-set "points=0"
-set "pacmanAnimationSpeed=7"
 set "pacmanDefaultSpeed=3"
-set /a "pacmanSpeed=pacmanDefaultSpeed"
+set "pacman_collect_range_default=3"
 set "pacmanHealth=1"
 set "pacman_predetorMode_dur=300"
 set "pacman_superSpeed_dur=100"
-set "frenzyMode=255"
-set /a "r=!random! %% 4" & (if !r! equ 0 (set "Key=Right") else if !r! equ 1 (set "Key=Left") else if !r! equ 2 (set "Key=Up") else if !r! equ 3 (set "Key=Down"))
-set "chaserAnimationSpeed=30"
-set /a "chaserSpeed=pacmanSpeed * 2 - 1"
-set "chaserAnimatedFrame=0"
+set "pacman_magnetic_dur=550"
+set "pacman_invisible_dur=300"
+set "chaser_frozen_dur=150"
 set "increaseChaserSpeedTime=1750"
-set "increaseChaserSpeedChance=25"
-set /a "dotAppearanceTime=200", "totalDots=startDot=1"
+set "increaseChaserSpeedChance=20"
+set "dotAppearanceTime=150"
 set "cherryAppearanceTime=2000"
 set "shieldAppearanceTime=300"
+set "shieldAppearanceChance=25"
 set "powerUpAppearanceTime=400"
-set "shieldAppearanceChance=35"
-set "powerUpAppearanceChance=35"
+set "powerUpAppearanceChance=25"
+set "snowflakeAppearanceTime=350"
+set "snowflakeAppearanceChance=25"
+set "poofAppearanceTime=500"
+set "poofAppearanceChance=25"
+set "magnetAppearanceTime=500"
+set "magnetAppearanceChance=25"
+set "pacman_magnetic_Range=20"
+set "invisibleAppearanceTime=475"
+set "invisibleAppearanceChance=25"
+set "teleportAppearanceTime=415"
+set "teleportAppearanceChance=25"
+
+set "pacman_invisible=False"
+set "pacman_magnetic=False"
 set "pacman_predetorMode=False"
 set "pacman_superSpeedMode=False"
 set "cherryBool=False"
 set "shieldBool=False"
 set "powerUpBool=False"
+set "snowflakeBool=False"
+set "poofBool=False"
+set "magnetBool=False"
+set "invisibleBool=False"
+set "teleportBool=False"
 set "skipIntro=False"
+set /a "centx=wid/2","centy=hei/2"
+set "points=0"
+set "pacmanAnimationSpeed=7"
+set /a "pacman_collect_range=pacman_collect_range_default"
+set /a "pacmanSpeed=pacmanDefaultSpeed"
+set "pacmanColorMode=255;0"
+set /a "r=!random! %% 4" & (if !r! equ 0 (set "Key=Right") else if !r! equ 1 (set "Key=Left") else if !r! equ 2 (set "Key=Up") else if !r! equ 3 (set "Key=Down"))
+set "chaserAnimationSpeed=30"
+set /a "chaserSpeed=pacmanSpeed * 2"
+set "chaserAnimatedFrame=0"
+set /a "totalDots=startDot=1"
+call :sprites
 
 if "!skipIntro!" neq "True" (
 	title Made by IcarusLives
@@ -70,20 +95,160 @@ if "!skipIntro!" neq "True" (
 			set "screen=!screen!%\e%!dot_y[%%i]!;!dot_x[%%i]!H!dot_[%%i]!"
 			
 			%getDistance% this.x dot_x[%%i] this.y dot_y[%%i] ballDistance
-			if !ballDistance! leq 3 (
-				set /a "startDot+=1"
-				if !startDot! gtr !totalDots! (
-					set /a "startDot=totalDots"
+			if !ballDistance! leq !pacman_collect_range! (
+				if "!pacman_magnetic!" neq "True" (
+					set /a "startDot+=1"
+					if !startDot! gtr !totalDots! (
+						set /a "startDot=totalDots"
+					)
+					set "dot_[%%i]="
+					set "dot_x[%%i]="
+					set "dot_y[%%i]="
+					set "dotR[%%i]="
+					set "dotG[%%i]="
+					set "dotB[%%i]="
+					set /a "points+=1","gotDots+=1"
+				) else (
+					if !frameCount! gtr !pacman_magnetic_duration! (
+						set "pacman_magnetic_duration="
+						set "pacman_magnetic=False"
+						set /a "pacman_collect_range=pacman_collect_range_default"
+					) else (
+						if !this.x! gtr !dot_x[%%i]! ( set /a "dot_x[%%i]+=1" ) else ( set /a "dot_x[%%i]-=1" )
+						if !this.y! gtr !dot_y[%%i]! ( set /a "dot_y[%%i]+=1" ) else ( set /a "dot_y[%%i]-=1" )
+						
+						if !ballDistance! leq !pacman_collect_range_default! (
+							set /a "startDot+=1"
+							if !startDot! gtr !totalDots! (
+								set /a "startDot=totalDots"
+							)
+							set "dot_[%%i]="
+							set "dot_x[%%i]="
+							set "dot_y[%%i]="
+							set "dotR[%%i]="
+							set "dotG[%%i]="
+							set "dotB[%%i]="
+							set /a "points+=1","gotDots+=1"
+						)
+					)
 				)
-				set "dot_[%%i]="
-				set "dot_x[%%i]="
-				set "dot_y[%%i]="
-				set "dotR[%%i]="
-				set "dotG[%%i]="
-				set "dotB[%%i]="
-				set /a "points+=1"
-				set /a "gotDots+=1"
 			)
+		)
+		REM Random Teleports-----------------------------------------------------------------------------------
+		if "!teleportBool!" neq "True" (
+			2>nul set /a "%chance:x=teleportAppearanceChance%" && (
+				2>nul set /a "%every:x=teleportAppearanceTime%" && (
+					set /a "teleport_x=!random! %% (wid - 10) + 5", "teleport_y=!random! %% (hei - 10) + 5"
+					set "totalteleports=1"
+					set "teleportBool=True"
+				)
+			)
+		)
+		for /l %%i in (1,1,!totalteleports!) do (
+			set "screen=!screen!%\e%!teleport_y!;!teleport_x!H%teleport%"
+		)
+		%getDistance% this.x teleport_x this.y teleport_y teleportDistance
+		if !teleportDistance! leq 4 (
+			set "totalteleports=0"
+			set "teleportBool=False"
+			set /a "this.x=!random! %% (wid - this.vd) + this.vr","this.y=!random! %% (hei - this.vd) + this.vr"
+			set /a "chaser.x=this.y","chaser.y=this.x","gotteleports+=1"
+			set "teleport_x="
+			set "teleport_y="
+		)
+		REM Random Magnets-------------------------------------------------------------------------------------
+		if "!magnetBool!" neq "True" (
+			2>nul set /a "%chance:x=magnetAppearanceChance%" && (
+				2>nul set /a "%every:x=magnetAppearanceTime%" && (
+					set /a "magnet_x=!random! %% (wid - 10) + 5", "magnet_y=!random! %% (hei - 10) + 5"
+					set "totalmagnets=1"
+					set "magnetBool=True"
+				)
+			)
+		)
+		for /l %%i in (1,1,!totalmagnets!) do (
+			set "screen=!screen!%\e%!magnet_y!;!magnet_x!H%magnet%"
+		)
+		%getDistance% this.x magnet_x this.y magnet_y magnetDistance
+		if !magnetDistance! leq 4 (
+			set "totalmagnets=0"
+			set "magnetBool=False"
+			set "magnet_x="
+			set "magnet_y="
+			set /a "gotmagnets+=1"
+			set /a "pacman_magnetic_duration=frameCount + pacman_magnetic_dur"
+			set /a "pacman_collect_range=pacman_magnetic_Range"
+			set "pacman_magnetic=True"
+		)
+		REM Random Invisibles----------------------------------------------------------------------------------
+		if "!invisibleBool!" neq "True" (
+			2>nul set /a "%chance:x=invisibleAppearanceChance%" && (
+				2>nul set /a "%every:x=invisibleAppearanceTime%" && (
+					set /a "invisible_x=!random! %% (wid - 10) + 5", "invisible_y=!random! %% (hei - 10) + 5"
+					set "totalinvisibles=1"
+					set "invisibleBool=True"
+				)
+			)
+		)
+		for /l %%i in (1,1,!totalinvisibles!) do (
+			set "screen=!screen!%\e%!invisible_y!;!invisible_x!H%cloud%"
+		)
+		%getDistance% this.x invisible_x this.y invisible_y invisibleDistance
+		if !invisibleDistance! leq 4 (
+			set "totalinvisibles=0"
+			set "invisibleBool=False"
+			set "invisible_x="
+			set "invisible_y="
+			set /a "gotinvisibles+=1"
+			set "pacman_invisible=True"
+			set /a "pacman_invisible_duration=frameCount + pacman_invisible_dur"
+			set "pacmanColorMode=255;255"
+		)
+		REM Random Poofs---------------------------------------------------------------------------------------
+		if "!poofBool!" neq "True" (
+			2>nul set /a "%chance:x=poofAppearanceChance%" && (
+				2>nul set /a "%every:x=poofAppearanceTime%" && (
+					set /a "poof_x=!random! %% (wid - 10) + 5", "poof_y=!random! %% (hei - 10) + 5"
+					set "totalpoofs=1"
+					set "poofBool=True"
+				)
+			)
+		)
+		for /l %%i in (1,1,!totalpoofs!) do (
+			set "screen=!screen!%\e%!poof_y!;!poof_x!H%poof%"
+		)
+		%getDistance% this.x poof_x this.y poof_y poofDistance
+		if !poofDistance! leq 4 (
+			set "totalpoofs=0"
+			set "poofBool=False"
+			set /a "chaser.x=(!random! %% wid) * -1"
+			set /a "chaser.y=(!random! %% hei) * -1"
+			set "poof_x="
+			set "poof_y="
+			set /a "gotpoofs+=1"
+		)
+		REM Random Snowflakes---------------------------------------------------------------------------------------
+		if "!snowflakeBool!" neq "True" (
+			2>nul set /a "%chance:x=snowflakeAppearanceChance%" && (
+				2>nul set /a "%every:x=snowflakeAppearanceTime%" && (
+					set /a "snowflake_x=!random! %% (wid - 10) + 5", "snowflake_y=!random! %% (hei - 10) + 5"
+					set "totalsnowflakes=1"
+					set "snowflakeBool=True"
+				)
+			)
+		)
+		for /l %%i in (1,1,!totalsnowflakes!) do (
+			set "screen=!screen!%\e%!snowflake_y!;!snowflake_x!H%snowflake%"
+		)
+		%getDistance% this.x snowflake_x this.y snowflake_y snowflakeDistance
+		if !snowflakeDistance! leq 4 (
+			set "totalsnowflakes=0"
+			set "snowflakeBool=False"
+			set "snowflake_x="
+			set "snowflake_y="
+			set /a "gotsnowflakes+=1"
+			set /a "chaser_frozen_duration=frameCount + chaser_frozen_dur"
+			set "chaser_Frozen=True"
 		)
 		REM Random Shields------------------------------------------------------------------------------------------
 		if "!shieldBool!" neq "True" (
@@ -157,7 +322,7 @@ if "!skipIntro!" neq "True" (
 			set /a "chaserSpeed+=10"
 			set "pacman_predetorMode=True"
 			set /a "pacman_predetorMode_duration+=(frameCount + pacman_predetorMode_dur)"
-			set "frenzyMode=0"
+			set "pacmanColorMode=0;0"
 			set /a "gotCherries+=1"
 		)
 		REM -Chaser mechanics---------------------------------------------------------------------------------------
@@ -171,7 +336,7 @@ if "!skipIntro!" neq "True" (
 				set "pacman_predetorMode_duration="
 				set "cherryBool=False"
 				set /a "chaserSpeed-=10"
-				set /a "frenzyMode=255"
+				set "pacmanColorMode=255;0"
 			)
 			if !this.x! gtr !chaser.x! ( set /a "chaser.i=-1" ) else ( set /a "chaser.i=1")
 			if !this.y! gtr !chaser.y! ( set /a "chaser.j=-1" ) else ( set /a "chaser.j=1")
@@ -180,9 +345,29 @@ if "!skipIntro!" neq "True" (
 		2>nul set /a "%every:x=chaserAnimationSpeed%" && (
 			set /a "chaserAnimatedFrame=(chaserAnimatedFrame + 1) %% 4"
 		)
-		2>nul set /a "%every:x=chaserSpeed%" && (
-			set /a "chaser.x+=chaser.i", "chaser.y+=chaser.j"
+		
+		
+		if "!chaser_frozen!" neq "True" (
+			if "!pacman_invisible!" neq "True" (
+				2>nul set /a "%every:x=chaserSpeed%" && (
+					set /a "chaser.x+=chaser.i", "chaser.y+=chaser.j"
+				)
+			) else (
+				if !frameCount! gtr !pacman_invisible_duration! (
+					set "pacman_invisible_duration="
+					set "pacman_invisible=False"
+					set "pacmanColorMode=255;0"
+				) else (
+					set /a "chaser.x+=!random! %% 3 + -1", "chaser.y+=!random! %% 3 + -1"
+				)
+			)
+		) else (
+			if !frameCount! gtr !chaser_frozen_duration! (
+				set "chaser_Frozen=False"
+				set "chaser_frozen_duration="
+			)
 		)
+		
 		if !chaserSpeed! gtr 1 (
 			2>nul set /a "%every:x=increaseChaserSpeedTime%" && (
 				2>nul set /a "%chance:x=increaseChaserSpeedChance%" && (
@@ -229,6 +414,11 @@ if "!skipIntro!" neq "True" (
 				"Cherries Eaten:   !gotCherries!"
 				"PowerUps Eaten:   !gotPowerUps!"
 				"Shields  Eaten:   !gotShields!"
+				"Snowflakes Eaten: !gotsnowflakes!"
+				"Poofs Eaten:      !gotpoofs!"
+				"Magnets Eaten:    !gotMagnets!"
+				"Invisibles Eaten: !gotinvisibles!"
+				"Teleports Eaten:  !gotteleports!"
 			) do (
 				echo %\e%!centy!;!centx!H%%~a
 				set /a "centy+=1"
@@ -246,8 +436,8 @@ if "!skipIntro!" neq "True" (
 		if !this.y! geq !this.vmh! set /a "this.y=this.vmh"
 
 		if /i "!lastKey!" neq "pause" (
-			for /f "tokens=1-3" %%i in ("!lastKey! !pacmanAnimatedFrame! !frenzyMode!") do (
-				set "screen=!screen!%\e%!this.rgb!%\e%!this.y!;!this.x!H!pacman[%%i][%%j]:frenzyMode=%%k!"
+			for /f "tokens=1-3" %%i in ("!lastKey! !pacmanAnimatedFrame! !pacmanColorMode!") do (
+				set "screen=!screen!%\e%!this.rgb!%\e%!this.y!;!this.x!H!pacman[%%i][%%j]:pacmanColorMode=%%k!"
 			)
 		)
 		
@@ -260,6 +450,11 @@ if "!skipIntro!" neq "True" (
 		rem     C - Spawn Cherry
 		rem     X - Spawn Shield
 		rem     Z - Spawn PowerUp
+		rem     B - Spawn Snowflake
+		rem     N - Spawn Poof
+		rem     M - Spawn Magnet
+		rem     F - Spawn Invisible
+		rem     G - Spawn Teleport
 		2>nul set /a "%every:x=pacmanSpeed%" && (
 
 			%= Read last key press from input buffer - Non blocking input =%
@@ -320,6 +515,42 @@ if "!skipIntro!" neq "True" (
 						if defined lastXkey set "key=!lastXKey!"
 						if defined lastYkey set "key=!lastYKey!"
 					)
+					if "!key!"=="Snowflake" (
+						set /a "snowflake_x=!random! %% (wid - 10) + 5", "snowflake_y=!random! %% (hei - 10) + 5"
+						set "totalsnowflakes=1"
+						set "snowflakeBool=True"
+						if defined lastXkey set "key=!lastXKey!"
+						if defined lastYkey set "key=!lastYKey!"
+					)
+					if "!key!"=="Poof" (
+						set /a "poof_x=!random! %% (wid - 10) + 5", "poof_y=!random! %% (hei - 10) + 5"
+						set "totalpoofs=1"
+						set "poofBool=True"
+						if defined lastXkey set "key=!lastXKey!"
+						if defined lastYkey set "key=!lastYKey!"
+					)
+					if "!key!"=="Magnet" (
+						set /a "magnet_x=!random! %% (wid - 10) + 5", "magnet_y=!random! %% (hei - 10) + 5"
+						set "totalmagnets=1"
+						set "magnetBool=True"
+						if defined lastXkey set "key=!lastXKey!"
+						if defined lastYkey set "key=!lastYKey!"
+					)
+					if "!key!"=="Invisible" (
+						set /a "invisible_x=!random! %% (wid - 10) + 5", "invisible_y=!random! %% (hei - 10) + 5"
+						set "totalinvisibles=1"
+						set "invisibleBool=True"
+						if defined lastXkey set "key=!lastXKey!"
+						if defined lastYkey set "key=!lastYKey!"
+					)
+					if "!key!"=="Teleport" (
+						set /a "teleport_x=!random! %% (wid - 10) + 5", "teleport_y=!random! %% (hei - 10) + 5"
+						set "totalteleports=1"
+						set "teleportBool=True"
+						if defined lastXkey set "key=!lastXKey!"
+						if defined lastYkey set "key=!lastYKey!"
+					)
+					
 				)2>nul
 			)
 		)
@@ -358,6 +589,11 @@ rem Cheat code keys
 set "key_C=Cherry"
 set "key_X=Shield"
 set "key_Z=PowerUp"
+set "key_B=Snowflake"
+set "key_N=Poof"
+set "key_M=Magnet"
+set "key_F=Invisible"
+set "key_G=Teleport"
 rem ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 set "pacmanKindaLogo[0]=,------.                                            ,--. ,--.,--.           ,--.        %\e%B%\e%88D"
 set "pacmanKindaLogo[1]=^|ÛÛ.--.Û' ,--,--.,---.,--,--,--. ,--,--.,--,--,     ^|ÛÛ.'ÛÛÛ/`--',--,--,  ,-^|ÛÛ^| ,--,--.%\e%B%\e%88D"
@@ -366,22 +602,22 @@ set "pacmanKindaLogo[3]=^|ÛÛ^|Û--' \Û'-'ÛÛ\Û`--.^|ÛÛ^|ÛÛ^|ÛÛ^|\Û'-
 set "pacmanKindaLogo[4]=`--'      `--`--'`---'`--`--`--' `--`--'`--''--'    `--' '--'`--'`--''--' `---'  `--`--'%\e%0m"
 set "pacmanKindaLogo=%pacmanKindaLogo[0]%%pacmanKindaLogo[1]%%pacmanKindaLogo[2]%%pacmanKindaLogo[3]%%pacmanKindaLogo[4]%"
 rem ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-set "pacman[Right][0]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛ[B[5DÛÛÛ[B[3DÛÛÛÛÛ[B[4DÛÛÛÛÛ[2D[3A[0m"
-set "pacman[Right][1]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛ[B[5DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
-set "pacman[Right][2]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
-set "pacman[Right][3]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛ[B[5DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
-set  "pacman[Left][0]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[4DÛÛÛÛÛ[B[3DÛÛÛ[B[5DÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
-set  "pacman[Left][1]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[5DÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
-set  "pacman[Left][2]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
-set  "pacman[Left][3]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[5DÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
-set  "pacman[Down][0]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[6DÛ[3CÛ[4D[3A[0m"
-set  "pacman[Down][1]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[6DÛÛ[CÛÛ[B[4D[3A[0m"
-set  "pacman[Down][2]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
-set  "pacman[Down][3]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[6DÛÛ[CÛÛ[B[4D[3A[0m"
-set    "pacman[Up][0]=[38;2;255;frenzyMode;0m[CÛ[3CÛ[B[6DÛÛÛ[CÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
-set    "pacman[Up][1]=[38;2;255;frenzyMode;0m[CÛÛ[CÛÛ[B[6DÛÛÛ[CÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
-set    "pacman[Up][2]=[38;2;255;frenzyMode;0m[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
-set    "pacman[Up][3]=[38;2;255;frenzyMode;0m[CÛÛ[CÛÛ[B[6DÛÛÛ[CÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
+set "pacman[Right][0]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛ[B[5DÛÛÛ[B[3DÛÛÛÛÛ[B[4DÛÛÛÛÛ[2D[3A[0m"
+set "pacman[Right][1]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛ[B[5DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
+set "pacman[Right][2]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
+set "pacman[Right][3]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛ[B[5DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
+set  "pacman[Left][0]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[4DÛÛÛÛÛ[B[3DÛÛÛ[B[5DÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
+set  "pacman[Left][1]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[5DÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
+set  "pacman[Left][2]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
+set  "pacman[Left][3]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[5DÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[2D[3A[0m"
+set  "pacman[Down][0]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[6DÛ[3CÛ[4D[3A[0m"
+set  "pacman[Down][1]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[6DÛÛ[CÛÛ[B[4D[3A[0m"
+set  "pacman[Down][2]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
+set  "pacman[Down][3]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[6DÛÛ[CÛÛ[B[4D[3A[0m"
+set    "pacman[Up][0]=[38;2;255;pacmanColorModem[CÛ[3CÛ[B[6DÛÛÛ[CÛÛÛ[B[7DÛÛÛ[CÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
+set    "pacman[Up][1]=[38;2;255;pacmanColorModem[CÛÛ[CÛÛ[B[6DÛÛÛ[CÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
+set    "pacman[Up][2]=[38;2;255;pacmanColorModem[CÛÛÛÛÛ[B[6DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
+set    "pacman[Up][3]=[38;2;255;pacmanColorModem[CÛÛ[CÛÛ[B[6DÛÛÛ[CÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[7DÛÛÛÛÛÛÛ[B[6DÛÛÛÛÛ[4D[3A[0m"
 REM ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 set        "chaser[0]=[38;5;10m.[38;5;9m[38;5;10m.[B[3D[38;5;12m[38;5;15m[38;5;12m[B[3D[38;5;10m.[38;5;12m[38;5;10m.[D[A[0m"
 set        "chaser[1]=[38;5;10m[38;5;12m.[38;5;10m[B[3D[38;5;12m.[38;5;15m[38;5;12m.[B[3D[38;5;10m[38;5;9m.[38;5;10m[D[A[0m"
@@ -390,5 +626,10 @@ set        "chaser[3]=[38;5;10m[38;5;12m.[38;5;10m[B[3D[38;5;9m.[38;5;1
 REM ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 set "cherry=[2C[38;2;97;138;61m_[B[3D[C[38;2;159;100;66m/[B[3D[38;2;255;0;0m°[38;2;255;0;0mÛ[B[2D[38;2;255;0;0mÛÛ[A[D[0m"
 set "shield=[38;5;12m'-'-'[B[5D[38;5;12m^|[38;5;7mÛSÛ[38;5;12m^|[B[5D[38;5;12m^|[38;5;7mÛÛÛ[38;5;12m^|[B[5D[38;5;12m\___/[3D[2A[0m" 
-set "powerUp=[38;5;9m[C/\[B[3D/+1\[B[4D`ÛÛ'[2D[A[0m"
+set "powerUp=[38;5;9m[C/\[B[3D/[38;5;15m+1[38;5;9m\[B[4D`ÛÛ'[B[4D[CÛÛ[D[A[0m"
+set "snowflake=[38;2;171;240;255m#[C#[C#[B[5D[C\^|/[B[4D[C/^|\[B[4D#[C#[C#[2A[3D[0m"
+set "poof=[38;2;65;65;65m[6C#[B[7D[C.--./[B[6D/POOF\[B[6D\ÛÛÛÛ/[B[6D[C`--'[2A[3D[0m"
+set "magnet=[38;5;15mÛÝ[CÛÝ[B[5D[38;2;255;0;0mÛ[38;2;155;0;0mÝ[C[38;2;0;0;255mÛ[38;2;0;0;155mÝ[B[5D[38;2;255;0;0mÛ[38;2;155;0;0mÝ[C[38;2;0;0;255mÛ[38;2;0;0;155mÝ[B[5D[38;2;255;0;0m\Û[38;5;15mÛ[38;2;0;0;255mÛ/[2A[3D[0m"
+set "cloud=[38;5;15m[C_[C_[B[4D(ÛÛÛ)[B[5D(ÛÛÛ)[B[5D[C`-'[2A[3D[0m"
+set "teleport=[38;2;255;0;0m[38;2;255;0;0mÛ[38;2;255;99;0m[38;2;255;99;0mÛ[38;2;255;198;0m[38;2;255;198;0mÛ[38;2;255;255;0m[38;2;255;255;0mÛ[B[4D[38;2;156;255;0m[38;2;156;255;0mÛ[38;2;57;255;0m[38;2;57;255;0mÛ[38;2;0;255;0m[38;2;0;255;0mÛ[38;2;0;255;99m[38;2;0;255;99mÛ[B[4D[38;2;0;255;198m[38;2;0;255;198mÛ[38;2;0;255;255m[38;2;0;255;255mÛ[38;2;0;156;255m[38;2;0;156;255mÛ[38;2;0;57;255m[38;2;0;57;255mÛ[B[4D[38;2;0;0;255m[38;2;0;0;255mÛ[38;2;99;0;255m[38;2;99;0;255mÛ[38;2;198;0;255m[38;2;198;0;255mÛ[38;2;255;0;255m[38;2;255;0;255mÛ[2A[2D[0m"
 goto :eof
