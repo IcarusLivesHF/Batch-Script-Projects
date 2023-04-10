@@ -6,12 +6,25 @@ rem https://github.com/IcarusLivesHF/Windows-Batch-Library/tree/8812670566744d2e
 
 set "revisionRequired=4.0.4"
 (%(:?=Library% && (call :revision)||(%failedLibrary%))2>nul
-	call :stdlib /w:90 /fs:8 /multi /gfx /s /misc
+	call :stdlib /w:90 /fs:8 /multi:2 /gfx /s /misc
 %)%  && (cls&goto :setup)
 :setup
 
 %BVector% this 7
+set /a "this.x=wid/2","this.y=hei/2"
 %BVector% chaser
+set /a "chaser.x=5","chaser.y=5"
+for %%i in (1 2) do (
+	set /a "npc[%%i].x=!random! %% wid"
+	set /a "npc[%%i].y=!random! %% hei"
+	set /a "dir=!random! %% 2"
+	if !dir! gtr 0 (
+		set /a "npc[%%i].i=!random! %% 2 + 2"
+	) else (
+		set /a "npc[%%i].j=!random! %% 2 + 2"
+	)
+)
+
 set "pacmanDefaultSpeed=3"
 set "pacman_collect_range_default=3"
 set "pacmanHealth=1"
@@ -32,7 +45,7 @@ set "snowflakeAppearanceTime=350"
 set "snowflakeAppearanceChance=25"
 set "poofAppearanceTime=500"
 set "poofAppearanceChance=25"
-set "magnetAppearanceTime=500"
+set "magnetAppearanceTime=400"
 set "magnetAppearanceChance=25"
 set "pacman_magnetic_Range=20"
 set "invisibleAppearanceTime=475"
@@ -61,7 +74,7 @@ set /a "pacmanSpeed=pacmanDefaultSpeed"
 set "pacmanColorMode=255;0"
 set /a "r=!random! %% 4" & (if !r! equ 0 (set "Key=Right") else if !r! equ 1 (set "Key=Left") else if !r! equ 2 (set "Key=Up") else if !r! equ 3 (set "Key=Down"))
 set "chaserAnimationSpeed=30"
-set /a "chaserSpeed=pacmanSpeed * 2"
+set /a "chaserSpeed=pacmanSpeed * 2 - 3"
 set "chaserAnimatedFrame=0"
 set /a "totalDots=startDot=1"
 call :sprites
@@ -241,7 +254,7 @@ if "!skipIntro!" neq "True" (
 			set "screen=!screen!%\e%!snowflake_y!;!snowflake_x!H%snowflake%"
 		)
 		%getDistance% this.x snowflake_x this.y snowflake_y snowflakeDistance
-		if !snowflakeDistance! leq 4 (
+		if !snowflakeDistance! leq 5 (
 			set "totalsnowflakes=0"
 			set "snowflakeBool=False"
 			set "snowflake_x="
@@ -396,9 +409,9 @@ if "!skipIntro!" neq "True" (
 			)
 		)
 		
-		if !pacmanHealth! gtr 5 set "pacmanHealth=5"
-		
-		if !pacmanHealth! lss 1 (
+		if !pacmanHealth! gtr 5 (
+			set "pacmanHealth=5"
+		) else if !pacmanHealth! lss 1 (
 			cls
 			set /a "centx-=8", "centy-=5"
 			for %%a in (
@@ -419,13 +432,29 @@ if "!skipIntro!" neq "True" (
 				"Magnets Eaten:    !gotMagnets!"
 				"Invisibles Eaten: !gotinvisibles!"
 				"Teleports Eaten:  !gotteleports!"
+				""
+				"Made By IcarusLives"
 			) do (
 				echo %\e%!centy!;!centx!H%%~a
 				set /a "centy+=1"
 			)
 			exit
 		)
-
+		REM -random walkers-----------------------------------------------------------------------------------------
+		for %%i in (1 2) do (
+			set /a "npc[%%i].x+=npc[%%i].i", "npc[%%i].y+=npc[%%i].j"
+			
+			%getDistance% this.x npc[%%i].x this.y npc[%%i].y NPCDistance
+			if !NPCDistance! leq 3 (
+				set /a "pacmanHealth-=1","gotByChaser+=1","npc[%%i].x=!random! %% wid","npc[%%i].y=!random! %% hei"
+			)
+			if !npc[%%i].x! leq 0     set /a "npc[%%i].x=0",   "npc[%%i].i*=-1"
+			if !npc[%%i].y! leq 0     set /a "npc[%%i].y=0",   "npc[%%i].j*=-1"
+			if !npc[%%i].x! geq %wid% set /a "npc[%%i].x=wid", "npc[%%i].i*=-1"
+			if !npc[%%i].y! geq %hei% set /a "npc[%%i].y=hei", "npc[%%i].j*=-1"
+			set "screen=!screen!%\e%!npc[%%i].y!;!npc[%%i].x!H!chaser[%%i]!""
+		)2>nul
+		
 		REM -Player movement----------------------------------------------------------------------------------------
 		2>nul set /a "%every:x=pacmanAnimationSpeed%" && (
 			set /a "pacmanAnimatedFrame=(pacmanAnimatedFrame + 1) %% 4"
@@ -627,7 +656,7 @@ REM ----------------------------------------------------------------------------
 set "cherry=[2C[38;2;97;138;61m_[B[3D[C[38;2;159;100;66m/[B[3D[38;2;255;0;0m°[38;2;255;0;0mÛ[B[2D[38;2;255;0;0mÛÛ[A[D[0m"
 set "shield=[38;5;12m'-'-'[B[5D[38;5;12m^|[38;5;7mÛSÛ[38;5;12m^|[B[5D[38;5;12m^|[38;5;7mÛÛÛ[38;5;12m^|[B[5D[38;5;12m\___/[3D[2A[0m" 
 set "powerUp=[38;5;9m[C/\[B[3D/[38;5;15m+1[38;5;9m\[B[4D`ÛÛ'[B[4D[CÛÛ[D[A[0m"
-set "snowflake=[38;2;171;240;255m#[C#[C#[B[5D[C\^|/[B[4D[C/^|\[B[4D#[C#[C#[2A[3D[0m"
+set "snowflake=[38;2;171;240;255m[2C*#*[B[5D[C#[C^|[C#[B[6D*[C\^|/[C*[B[7D#--.--#[B[7D*[C/^|\[C*[B[7D[C#[C^|[C#[B[6D[2C*#*[3A[2D[0m"
 set "poof=[38;2;65;65;65m[6C#[B[7D[C.--./[B[6D/POOF\[B[6D\ÛÛÛÛ/[B[6D[C`--'[2A[3D[0m"
 set "magnet=[38;5;15mÛÝ[CÛÝ[B[5D[38;2;255;0;0mÛ[38;2;155;0;0mÝ[C[38;2;0;0;255mÛ[38;2;0;0;155mÝ[B[5D[38;2;255;0;0mÛ[38;2;155;0;0mÝ[C[38;2;0;0;255mÛ[38;2;0;0;155mÝ[B[5D[38;2;255;0;0m\Û[38;5;15mÛ[38;2;0;0;255mÛ/[2A[3D[0m"
 set "cloud=[38;5;15m[C_[C_[B[4D(ÛÛÛ)[B[5D(ÛÛÛ)[B[5D[C`-'[2A[3D[0m"
