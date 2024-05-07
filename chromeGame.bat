@@ -7,11 +7,11 @@ call :sprites
 
 rem adjust to your preference. 1 = slowest, 100000 = fastest
 set "delay=25"
-set /p "delay=%\e%[38;5;46m%\e%[15;20HDelay(default=25): "
+set /p "delay=%\e%[38;5;46m%\e%[15;19HDelay %\e%[38;5;39m(%\e%[38;5;228mdefault%\e%[0m=%\e%[38;5;14m25%\e%[38;5;39m)%\e%[0m: "
 REM set "delay=100000"
 
 set /a "difficulty=1"
-set /p "difficulty=%\e%[38;5;196m%\e%[16;16HDifficulty(default=1): "
+set /p "difficulty=%\e%[38;5;196m%\e%[16;14HDifficulty %\e%[38;5;39m(%\e%[38;5;228mdefault%\e%[0m= %\e%[38;5;14m1%\e%[38;5;39m)%\e%[0m: "
 rem --------------------------------------
 
 set /a "speed=1"
@@ -176,6 +176,7 @@ for /f "tokens=1 delims==" %%a in ('set') do (
 
 set "signalFile=%temp%\%~n0_signal.txt"
 del /f /q "%SignalFile%" 2>nul 1>nul
+del /f /q "%SignalFile:Signal=Stop%"  2>nul 1>nul
 del /f /q "%SignalFile:Signal=Abort%" 2>nul 1>nul
 	
 for /f "delims=" %%T in ('forfiles /p "%~dp0." /m "%~nx0" /c "cmd /c echo(0x09"') do set "TAB=%%T"
