@@ -35,7 +35,7 @@ for /l %%i in (1,1,2) do (
 	set /a "cloud[%%i].i=!random! %% 3 + 1"
 )
 
-"%~F0" Controller >file.txt | "%~F0" Main <file.txt
+"%~F0" Controller >"%temp%\%~n0_signal.txt" | "%~F0" Main <"%temp%\%~n0_signal.txt"
 exit
 
 :Main
@@ -119,6 +119,9 @@ for /l %%# in () do (
 	)
 
 	set "com=" & set /p "com="
+	if /i "!com:~0,4!" equ "quit" (
+		exit
+	)
 	if /i "!com:~0,1!" equ "w" if !player.y! equ %floor% (
 		set /a "velocity+=jump * -1"
 	)
@@ -136,11 +139,33 @@ for /l %%# in () do (
 	
 	for /l %%Z in (0,%delay%,1000000) do rem
 )2>nul
+exit
 
 :Controller
-for /l %%# in () do (
-	for /f "tokens=*" %%i in ('choice /c:w /n') do echo=%%~i
+Setlocal DISABLEdelayedExpansion
+	REM Environment handling allows use of ! key
+For /l %%C in () do (
+	Set "Key="
+	for /f "delims=" %%A in ('C:\Windows\System32\xcopy.exe /w "%~f0" "%~f0" 2^>nul') do If not Defined Key (
+		set "key=%%A"
+		Setlocal ENABLEdelayedExpansion
+		set key=^!KEY:~-1!
+		If "!key!" == "!TAB!" (
+			>"%SignalFile:Signal=Abort%" Echo(
+			<nul Set /P "=quit"
+			EXIT
+		)
+		1> %~n0txt.tmp (echo(!key!!sub!)
+		copy %~n0txt.tmp /a %~n0txt2.tmp /b > nul
+		type %~n0txt2.tmp
+		del %~n0txt.tmp %~n0txt2.tmp
+		Endlocal
+	)
 )
+
+
+
+
 
 :init
 for /f "tokens=1 delims==" %%a in ('set') do (
@@ -148,6 +173,12 @@ for /f "tokens=1 delims==" %%a in ('set') do (
 	for %%b in ( cd Path ComSpec SystemRoot temp windir ) do if /i "%%a"=="%%b" set "unload=false"
 	if "!unload!"=="true" set "%%a="
 )
+
+set "signalFile=%temp%\%~n0_signal.txt"
+del /f /q "%SignalFile%" 2>nul 1>nul
+del /f /q "%SignalFile:Signal=Abort%" 2>nul 1>nul
+	
+for /f "delims=" %%T in ('forfiles /p "%~dp0." /m "%~nx0" /c "cmd /c echo(0x09"') do set "TAB=%%T"
 
 set /a "wid=%~1,hei=%~2" & mode %~1,%~2
 
@@ -169,16 +200,16 @@ set @collisionRectRect=for %%# in (1 2) do if %%#==2 ( for /f "tokens=1-9" %%1 i
 goto :eof
 
 :sprites
-set "[1]=[C [2D[B  [2D[B² [2D[B² [3A"
-set "[2]=  [2D[B[C [2D[B [C[2D[B  [3A"
-set "[3]=   [3D[B[2C [3D[B[C  [3D[B   [3A"
-set "[4]= ² [3D[B ² [3D[B   [3D[B[2C [3A"
-set "[5]=  [2D[B [C[2D[B[C [2D[B  [3A"
-set "[6]= [2C[3D[B   [3D[B [C [3D[B   [3A"
-set "[7]=   [3D[B[2C [3D[B²² [3D[B²² [3A"
-set "[8]=   [3D[B   [3D[B [C [3D[B   [3A"
-set "[9]=   [3D[B [C [3D[B   [3D[B[2C [3A"
-set "[0]=   [3D[B [C [3D[B [C [3D[B   [3A"
+set "[1]=%\e%[C %\e%[2D%\e%[B  %\e%[2D%\e%[BÂ² %\e%[2D%\e%[BÂ² %\e%[3A"
+set "[2]=  %\e%[2D%\e%[B%\e%[C %\e%[2D%\e%[B %\e%[C%\e%[2D%\e%[B  %\e%[3A"
+set "[3]=   %\e%[3D%\e%[B%\e%[2C %\e%[3D%\e%[B%\e%[C  %\e%[3D%\e%[B   %\e%[3A"
+set "[4]= Â² %\e%[3D%\e%[B Â² %\e%[3D%\e%[B   %\e%[3D%\e%[B%\e%[2C %\e%[3A"
+set "[5]=  %\e%[2D%\e%[B %\e%[C%\e%[2D%\e%[B%\e%[C %\e%[2D%\e%[B  %\e%[3A"
+set "[6]= %\e%[2C%\e%[3D%\e%[B   %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B   %\e%[3A"
+set "[7]=   %\e%[3D%\e%[B%\e%[2C %\e%[3D%\e%[BÂ²Â² %\e%[3D%\e%[BÂ²Â² %\e%[3A"
+set "[8]=   %\e%[3D%\e%[B   %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B   %\e%[3A"
+set "[9]=   %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B   %\e%[3D%\e%[B%\e%[2C %\e%[3A"
+set "[0]=   %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B   %\e%[3A"
 
 set "cloud[1]=%\e%[48;5;15m%\e%[2A%\e%7  %\e%8%\e%[B    %\e%[0m"
 set "cloud[2]=%\e%[48;5;15m%\e%[2A%\e%7  %\e%8%\e%[B%\e%[D    %\e%[0m"
