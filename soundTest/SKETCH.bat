@@ -6,6 +6,8 @@ call lib\stdlib 70 55
 call lib\gfx
 call lib\sound
 
+title controls: W A S D
+
 set "cy=8"
 
 "%~F0" Controller >"%temp%\%~n0_signal.txt" | "%~F0" Main <"%temp%\%~n0_signal.txt"
@@ -13,7 +15,7 @@ exit
 
 :Main
 	for /l %%# in () do (
-	
+
 		%@rect% 5 5 60 45
 		set "scrn=!scrn!!$rect!"
 		
