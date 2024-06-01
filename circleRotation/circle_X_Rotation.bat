@@ -16,10 +16,10 @@ for /l %%i in () do (
 	
 		REM rotate on x
 		set /a "px=20 * !cos:x=%%j! + wid / 2"
-        set /a "py=20 * !sin:x=%%j! * !cos:x=angle! + 2 * !sin:x=angle! + hei / 2"
-        
-        set "scrn=!scrn!%\e%[!py!;!px!HO"
-    )
+	        set /a "py=20 * !sin:x=%%j! * !cos:x=angle! + 2 * !sin:x=angle! + hei / 2"
+	        
+	        set "scrn=!scrn!%\e%[!py!;!px!HO"
+	    )
 	
 	echo %\e%[2J!scrn!
 	set "scrn="
