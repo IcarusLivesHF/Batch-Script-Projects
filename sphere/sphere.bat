@@ -31,7 +31,6 @@ for /l %%i in (0,%step%,360) do (
 rem Step 4: Empty env
 (
   for /F "Tokens=1 delims==" %%v in ('set') do set "%%v="
-  set "\e=%\e%"
   set "ball=%ball%"
   set "sin=%sin%
   set "cos=%cos%
