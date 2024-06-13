@@ -4,7 +4,7 @@ rem this script work on 1x2 char ratio. it duoble the width.
 call :Set_Font "Lucida Console" 5 nomax %1 || exit
 
 rem For Fast PC you can increase number of point or radius
-set /a "point=9, rad=80, wid=(rad*2+rad*2),hei=rad*2"
+set /a "point=15, rad=80, wid=(rad*2+rad*2),hei=rad*2"
 
 mode %wid%,%hei%
 chcp 65001
@@ -68,7 +68,7 @@ for /l %%# in (1,1,10000) do (
 		echo=%\e%[2J!circle!
 		set "circle="
 
- )
+	 )
 )
 goto :eof
 :Set_Font FontName FontSize max/nomax dummy
