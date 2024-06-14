@@ -20,28 +20,14 @@ mode %wid%,%hei%
 
 for /l %%# in () do (
 	
-	for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do (
-		set /a "t1=((((1%%a-1000)*60+(1%%b-1000))*60+(1%%c-1000))*100)+(1%%d-1000)"
-	)
-	if defined t2 set /a "deltaTime=(t1 - t2)","$TT+=deltaTime","timer100cs+=deltaTime","$sec=$TT / 100 %% 60","$min=$TT / 100 / 60 %% 60"
-	set /a "t2=t1", "global.frameCount=(global.frameCount + 1) %% 0x7FFFFFFF", "fpsFrames+=1"
-
-	if !timer100cs! GEQ 100 (
-		set /a "timer100cs-=100,fps=fpsFrames,fpsFrames=0"
-		if !timer100cs! GEQ 100 set /a timer100cs=0
-	)
-	if "!$sec:~1!" equ "" set "$sec=0!$sec!"
-	
-	title Time: !$min!:!$sec! FPS:!fps! deltaTime:!deltaTime!
-	
 	set /a "angle+=rotationSpeed"
 	
 	for /l %%i in (0,1,7) do ( set /a ^
 		       "px[%%i]=0", "py[%%i]=0",^
-		       "x=x[%%i] * boxSize, y=y[%%i] * boxSize, z=z[%%i] * boxSize",^
-		       "%rotY%", "x=ryx, y=ryy, z=ryz",^
-		       "%rotX%", "x=rxx, y=rxy, z=rxz",^
-		       "%rotZ%", "%projection:?=Z%",^
+		       "x=x[%%i] * boxSize, y=y[%%i] * boxSize, z=z[%%i] * boxSize","%rotY%",^
+			   "x=ryx, y=ryy, z=ryz", "%rotX%",^
+			   "x=rxx, y=rxy, z=rxz", "%rotZ%",^
+			   "%projection:?=Z%",^
 		       "px+=wid/2", "py+=hei/2",^
 		       "px[%%i]+=px", "py[%%i]+=py"
 	)
