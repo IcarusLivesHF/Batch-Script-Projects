@@ -1,10 +1,10 @@
 @echo off & setlocal enableDelayedExpansion
 
 rem this script work on 1x2 char ratio. it duoble the width.
-call :Set_Font "Lucida Console" 2 nomax %1 || exit
+call :Set_Font "Lucida Console" 8 nomax %1 || exit
 
 rem For Fast PC you can increase number of point or radius
-set /a "point=15, rad=80, wid=(rad*2+rad*2),hei=rad*2"
+set /a "point=15, rad=40, wid=(rad*2+rad*2),hei=rad*2"
 
 mode %wid%,%hei%
 chcp 65001
@@ -12,8 +12,9 @@ for /f %%a in ('echo prompt $E^| cmd') do set "\e=%%a"
 
 rem you can try different type of point
 %= *Φ•○♥øo█♦ =%
-rem set "ball=%\e%[D███%\e%[A%\e%[3D/█\%\e%[2B%\e%[3D\█/"
-set "ball=██"
+REM set "ball=%\e%[D███%\e%[A%\e%[3D/█\%\e%[2B%\e%[3D\█/"
+REM set "ball=██"
+set "ball=♥"
 
 set "sin=(a=((x*31416/180)%%62832)+(((x*31416/180)%%62832)>>31&62832), b=(a-15708^a-47124)>>31,a=(-a&b)+(a&~b)+(31416&b)+(-62832&(47123-a>>31)),a-a*a/1875*a/320000+a*a/1875*a/15625*a/16000*a/2560000-a*a/1875*a/15360*a/15625*a/15625*a/16000*a/44800000)"
 set "cos=(a=((15708-x*31416/180)%%62832)+(((15708-x*31416/180)%%62832)>>31&62832), b=(a-15708^a-47124)>>31,a=(-a&b)+(a&~b)+(31416&b)+(-62832&(47123-a>>31)),a-a*a/1875*a/320000+a*a/1875*a/15625*a/16000*a/2560000-a*a/1875*a/15360*a/15625*a/15625*a/16000*a/44800000)"
@@ -28,16 +29,27 @@ for /l %%i in (0,%step%,360) do (
 	set "PRE=!PRE!"!ci! !si!" "	
 )
 
+(set \n=^^^
+%= This creates an escaped Line Feed - DO NOT ALTER =%
+)
+
+set "HSL(n)=k=(n*100+(%%1 %% 3600)/3) %% 1200, x=k-300, y=900-k, x=y-((y-x)&((x-y)>>31)), x=100-((100-x)&((x-100)>>31)), max=x-((x+100)&((x+100)>>31))"
+set @HSL.RGB=for %%# in (1 2) do if %%#==2 ( for /f "tokens=1-3" %%1 in ("^!args^!") do (%\n%
+	set /a "%HSL(n):n=0%", "r=(%%3-(%%2*((10000-%%3)-(((10000-%%3)-%%3)&((%%3-(10000-%%3))>>31)))/10000)*max/100)*255/10000","%HSL(n):n=8%", "g=(%%3-(%%2*((10000-%%3)-(((10000-%%3)-%%3)&((%%3-(10000-%%3))>>31)))/10000)*max/100)*255/10000", "%HSL(n):n=4%", "b=(%%3-(%%2*((10000-%%3)-(((10000-%%3)-%%3)&((%%3-(10000-%%3))>>31)))/10000)*max/100)*255/10000"%\n%
+)) else set args=
+set "hsl(n)="
+
 rem Step 4: Empty env
 (
-  for /F "Tokens=1 delims==" %%v in ('set') do set "%%v="
-  set "ball=%ball%"
-  set "sin=%sin%
-  set "cos=%cos%
+	for /F "Tokens=1 delims==" %%v in ('set') do set "%%v="
+	set "\e=%\e%"
+	set "ball=%ball%"
+	set "sin=%sin%"
+	set "cos=%cos%"
 
-  for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do set /a "t1=((((10%%a-1000)*60+(10%%b-1000))*60+(10%%c-1000))*100)+(10%%d-1000)"
+	for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do set /a "t1=((((10%%a-1000)*60+(10%%b-1000))*60+(10%%c-1000))*100)+(10%%d-1000)"
 
-for /l %%# in (1,1,10000) do (
+	for /l %%# in (1,1,10000) do (
 
 		for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do set /a "t2=((((10%%a-1000)*60+(10%%b-1000))*60+(10%%c-1000))*100)+(10%%d-1000)"
 		set /a "dt=(t2 - t1)*10000/%%#, FPS=1000000/dt"
@@ -53,6 +65,8 @@ for /l %%# in (1,1,10000) do (
 
 			for %%t in (%PRE%) do for /f "tokens=1,2" %%u in (%%t) do (
 				
+				
+				
 				REM Repeated factors and Rotate around the X axis and Y
 				set /a 	new_z=-%rad% * %%v/10000 * sa/10000 + (%rad% * %%u/10000 * %%a/10000 * sa/10000 + %rad% * %%u/10000 * %%b/10000 * ca/10000^) * ca/10000, ^
 					cx=(%rad% * %%v/10000 * ca/10000 + (%rad% * %%u/10000 * %%a/10000 * sa/10000 + %rad% * %%u/10000 * %%b/10000 * ca/10000^) * sa/10000^) *2 + %wid% / 2, ^
@@ -60,14 +74,14 @@ for /l %%# in (1,1,10000) do (
 				
 				if !new_z! lss 0 (
 					set "circle=!circle!%\e%[!cy!;!cx!H%Ball%%\e%[0m"
-				) else set "circle=!circle!%\e%[!cy!;!cx!H♦"
+				) else set "circle=!circle!%\e%[!cy!;!cx!H."
 
 			)
 		)
 		echo=%\e%[2J!circle!
 		set "circle="
 
- )
+	)
 )
 goto :eof
 :Set_Font FontName FontSize max/nomax dummy
