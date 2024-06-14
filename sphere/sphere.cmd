@@ -29,16 +29,6 @@ for /l %%i in (0,%step%,360) do (
 	set "PRE=!PRE!"!ci! !si!" "	
 )
 
-(set \n=^^^
-%= This creates an escaped Line Feed - DO NOT ALTER =%
-)
-
-set "HSL(n)=k=(n*100+(%%1 %% 3600)/3) %% 1200, x=k-300, y=900-k, x=y-((y-x)&((x-y)>>31)), x=100-((100-x)&((x-100)>>31)), max=x-((x+100)&((x+100)>>31))"
-set @HSL.RGB=for %%# in (1 2) do if %%#==2 ( for /f "tokens=1-3" %%1 in ("^!args^!") do (%\n%
-	set /a "%HSL(n):n=0%", "r=(%%3-(%%2*((10000-%%3)-(((10000-%%3)-%%3)&((%%3-(10000-%%3))>>31)))/10000)*max/100)*255/10000","%HSL(n):n=8%", "g=(%%3-(%%2*((10000-%%3)-(((10000-%%3)-%%3)&((%%3-(10000-%%3))>>31)))/10000)*max/100)*255/10000", "%HSL(n):n=4%", "b=(%%3-(%%2*((10000-%%3)-(((10000-%%3)-%%3)&((%%3-(10000-%%3))>>31)))/10000)*max/100)*255/10000"%\n%
-)) else set args=
-set "hsl(n)="
-
 rem Step 4: Empty env
 (
 	for /F "Tokens=1 delims==" %%v in ('set') do set "%%v="
@@ -57,27 +47,20 @@ rem Step 4: Empty env
 
 		set /a "dt=t2 - t1, angle=dt/3 %% 360" & set "dt=" & set "t2=" & set "FPS=" & rem step 5 keep env empty
 		
-		rem Repeated factors
 		set /a "ca=!cos:x=angle!, sa=!sin:x=angle!"	
 
-		rem step 5
 		for %%s in (%PRE%) do for /f "tokens=1,2" %%a in (%%s) do (
+		for %%t in (%PRE%) do for /f "tokens=1,2" %%u in (%%t) do (
 
-			for %%t in (%PRE%) do for /f "tokens=1,2" %%u in (%%t) do (
-				
-				
-				
-				REM Repeated factors and Rotate around the X axis and Y
-				set /a 	new_z=-%rad% * %%v/10000 * sa/10000 + (%rad% * %%u/10000 * %%a/10000 * sa/10000 + %rad% * %%u/10000 * %%b/10000 * ca/10000^) * ca/10000, ^
-					cx=(%rad% * %%v/10000 * ca/10000 + (%rad% * %%u/10000 * %%a/10000 * sa/10000 + %rad% * %%u/10000 * %%b/10000 * ca/10000^) * sa/10000^) *2 + %wid% / 2, ^
-					cy=%rad% * %%u/10000 * %%a/10000 * ca/10000 - %rad% * %%u/10000 * %%b/10000 * sa/10000 + %hei% / 2
-				
-				if !new_z! lss 0 (
-					set "circle=!circle!%\e%[!cy!;!cx!H%Ball%%\e%[0m"
-				) else set "circle=!circle!%\e%[!cy!;!cx!H."
-
-			)
-		)
+			REM Repeated factors and Rotate around the X axis and Y
+			set /a 	new_z=-%rad% * %%v/10000 * sa/10000 + (%rad% * %%u/10000 * %%a/10000 * sa/10000 + %rad% * %%u/10000 * %%b/10000 * ca/10000^) * ca/10000, ^
+				cx=(%rad% * %%v/10000 * ca/10000 + (%rad% * %%u/10000 * %%a/10000 * sa/10000 + %rad% * %%u/10000 * %%b/10000 * ca/10000^) * sa/10000^) *2 + %wid% / 2, ^
+				cy=%rad% * %%u/10000 * %%a/10000 * ca/10000 - %rad% * %%u/10000 * %%b/10000 * sa/10000 + %hei% / 2
+			
+			if !new_z! lss 0 (
+				set "circle=!circle!%\e%[!cy!;!cx!H%Ball%%\e%[0m"
+			) else set "circle=!circle!%\e%[!cy!;!cx!H."
+		))
 		echo=%\e%[2J!circle!
 		set "circle="
 
