@@ -10,7 +10,14 @@ for /l %%i in (1,1,4) do (
 )
 set /a "centerX=wid / 2"
 
-for /l %%# in () do (
+for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do set /a "t1=((((10%%a-1000)*60+(10%%b-1000))*60+(10%%c-1000))*100)+(10%%d-1000)"
+
+for /l %%# in (1,1,10000) do (
+
+	for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do set /a "t2=((((10%%a-1000)*60+(10%%b-1000))*60+(10%%c-1000))*100)+(10%%d-1000)"
+	set /a "dt=(t2 - t1)*10000/%%#, FPS=1000000/dt"
+	title Iteration:%%#   dt:!dt!   FPS:!FPS!
+	
 	for /l %%i in (1,1,4) do (
 		set /a "cx[%%i]+=ci[%%i]","cy[%%i]+=cj[%%i]","mx[%%i]=wid - cx[%%i]"
 		if !cx[%%i]! lss 1         set /a "cx[%%i]=1,  ci[%%i]*=-1"
@@ -25,7 +32,7 @@ for /l %%# in () do (
 	set "scrn=!$bezier!"
 	%@bezier% !mx[1]!  !cy[1]! !mx[2]!  !cy[2]! !mx[3]!  !cy[3]! !mx[4]!  !cy[4]! 12
 	set "scrn=!scrn!!$bezier!"
-	echo %\e%[2J!scrn!
+	echo %\e%[2J!scrn!%\e%[0m
 )
 
 
@@ -47,8 +54,6 @@ set /a "wid=hei=80"
 mode %wid%,%hei%
 
 
-
-
 rem %@bezier% x1 y1 x2 y2 x3 y3 x4 y4 color <rtn> $bezier
 set @bezier=for %%# in (1 2) do if %%#==2 ( for /f "tokens=1-9" %%1 in ("^!args^!") do (%\n%
 	if "%%~9" equ "" ( set "hue=15" ) else ( set "hue=%%~9")%\n%
@@ -59,5 +64,4 @@ set @bezier=for %%# in (1 2) do if %%#==2 ( for /f "tokens=1-9" %%1 in ("^!args^
     )%\n%
 	set "$bezier=^!$bezier^!%\e%[0m"%\n%
 )) else set args=
-
 goto :eof
