@@ -26,7 +26,7 @@ for /l %%# in () do (
 			   "angle+=angleV",^
 			   "bob.x=length * !sin:x=angle! + origin.x",^
 			   "bob.y=length * !cos:x=angle! + origin.y",^
-			   "angleV=angleV * 99000 / 100000" & rem DAMPENING
+			   "angleV=angleV * 99900 / 100000" & rem DAMPENING
 		
 		%@line% !origin.x! !origin.y! !bob.x! !bob.y!
 		set "scrn=!scrn!!$line!"
