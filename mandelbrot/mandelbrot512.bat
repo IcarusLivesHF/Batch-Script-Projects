@@ -8,11 +8,10 @@ set "map=x2 + (y2 - x2) * (v - x1) / (y1 - x1)"
 
 for /l %%y in (-64,1,64) do for /l %%x in (-87,1,52) do (
     set /a "a=0", "b=0"
-    for /l %%i in (0,1,15) do (
+    for /l %%i in (1,1,16) do (
         set /a "aa=a * a / 512", "bb=b * b / 512", "aabb=aa * bb"
         if !aabb! lss 1000000 (
-            set /a "b=2 * a * b / 512 + %%y * 10", "a=aa - bb + %%x * 10",^
-				   "v=%%i, x1=0, y1=15, x2=0, y2=100", "v=!sqrt:N=%map%!, x1=0, y1=10, x2=0, y2=255, bright=%map%"
+            set /a "b=2 * a * b / 512 + %%y * 10", "a=aa - bb + %%x * 10", "bright=%%i<<4"
         )
     )
     <nul set /p "=%\e%[48;2;!bright!;!bright!;!bright!m  "
