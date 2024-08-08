@@ -6,10 +6,10 @@ for /f %%a in ('echo prompt $E^| cmd') do set "\e=%%a"
 
 for /l %%y in (-128,1,128) do for /l %%x in (-167,1,102) do (
     set /a "a=0", "b=0"
-    for /l %%i in (1,1,16) do (
+    for /l %%i in (1,1,32) do (
         set /a "aa=a * a / 1024", "bb=b * b / 1024", "aabb=aa * bb"
         if !aabb! lss 1000000 (
-            set /a "b=2 * a * b / 1024 + %%y * 10", "a=aa - bb + %%x * 10", "bright=%%i<<4"
+            set /a "b=2 * a * b / 1024 + %%y * 10", "a=aa - bb + %%x * 10", "bright=%%i<<3"
         )
     )
     <nul set /p "=%\e%[48;2;!bright!;!bright!;!bright!m  "

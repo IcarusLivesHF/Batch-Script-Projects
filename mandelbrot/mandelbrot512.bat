@@ -3,21 +3,19 @@
 call :Set_Font "Lucida Console" 2 nomax %1 || exit
 
 for /f %%a in ('echo prompt $E^| cmd') do set "\e=%%a"
-set "sqrt=( q=(N)/3030-(N)/18748900*5028-(N)/2079177597*2344+31, q=((N)/(((N)/q+q)>>1)+(((N)/q+q)>>1))>>1, q=((N)/(((N)/q+q)>>1)+(((N)/q+q)>>1))>>1, q+=((N)-q*q)>>31 )"
-set "map=x2 + (y2 - x2) * (v - x1) / (y1 - x1)"
 
 for /l %%y in (-64,1,64) do for /l %%x in (-87,1,52) do (
     set /a "a=0", "b=0"
-    for /l %%i in (1,1,16) do (
+    for /l %%i in (1,1,32) do (
         set /a "aa=a * a / 512", "bb=b * b / 512", "aabb=aa * bb"
         if !aabb! lss 1000000 (
-            set /a "b=2 * a * b / 512 + %%y * 10", "a=aa - bb + %%x * 10", "bright=%%i<<4"
+            set /a "b=2 * a * b / 512 + %%y * 10", "a=aa - bb + %%x * 10", "bright=%%i<<3"
         )
     )
     <nul set /p "=%\e%[48;2;!bright!;!bright!;!bright!m  "
 )
 
-pause
+pause>nul
 exit
 
 :Set_Font FontName FontSize max/nomax dummy
