@@ -1,7 +1,6 @@
 @echo off & setlocal enableDelayedExpansion
 
 call lib\stdlib 70 55
-call lib\gfx
 call lib\sound
 
 set "cy=8"
@@ -10,8 +9,6 @@ set "cy=8"
 :main
 
 	set "scrn=!scrn!%\e%[!cy!;8H"
-	%@rect% 5 5 60 45
-	set "scrn=!scrn!!$rect!"
 	
 	for /l %%i in (1,1,6) do (
 		set /a "y=3 * %%i + 5"
