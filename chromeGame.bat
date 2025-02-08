@@ -5,10 +5,6 @@ if "%~1" neq "" goto :%~1
 call :init 60 30
 call :sprites
 
-rem adjust to your preference. 1 = slowest, 100000 = fastest
-rem set "delay=25"
-rem set /p "delay=%\e%[38;5;46m%\e%[15;19HDelay %\e%[38;5;39m(%\e%[38;5;228mdefault%\e%[0m=%\e%[38;5;14m25%\e%[38;5;39m)%\e%[0m: "
-REM set "delay=100000"
 
 set /a "difficulty=1"
 set /p "difficulty=%\e%[38;5;196m%\e%[16;14HDifficulty [1-5] %\e%[38;5;39m(%\e%[38;5;228mdefault%\e%[0m= %\e%[38;5;14m1%\e%[38;5;39m)%\e%[0m: "
@@ -21,7 +17,7 @@ set /a "player.x=6"
 set /a "player.y=floor"
 set /a "sunOsc=1"
 
-rem if !delay! gtr 100000 set "delay=100000"
+
 if !difficulty! gtr 5 set "difficulty=5"
 title Chrome Game - difficulty: !difficulty! ^| W to jump
 
@@ -122,12 +118,8 @@ for /l %%# in () do (
 		)
 	) else (
 		
-		set /a "spawnBlock=frameCount %% 50"
-		
-		if !spawnBlock! equ 0 (
-			set "spawned=true"
-			set /a "block.x=wid", "block.y=floor", "block.w=!random! %% 3 + 2", "block.h=!random! %% 3 + 2"
-		)
+		set "spawned=true"
+		set /a "block.x=wid", "block.y=floor", "block.w=!random! %% 3 + 2", "block.h=!random! %% 3 + 2"
 	)
 
 	set "com=" & set /p "com="
@@ -184,6 +176,8 @@ For /l %%C in () do (
 
 
 :init
+chcp 65001>nul
+
 for /f "tokens=1 delims==" %%a in ('set') do (
 	set "unload=true"
 	for %%b in ( cd Path ComSpec SystemRoot temp windir ) do if /i "%%a"=="%%b" set "unload=false"
@@ -210,13 +204,13 @@ set "@collisionRectRect=((~((a+c)-e)>>31)&1) & ((~((e+g)-a)>>31)&1) & ((~((b+d)-
 goto :eof
 
 :sprites
-set "[1]=%\e%[C %\e%[2D%\e%[B  %\e%[2D%\e%[B² %\e%[2D%\e%[B² %\e%[3A"
+set "[1]=%\e%[C %\e%[2D%\e%[B  %\e%[2D%\e%[Bâ–“ %\e%[2D%\e%[Bâ–“ %\e%[3A"
 set "[2]=  %\e%[2D%\e%[B%\e%[C %\e%[2D%\e%[B %\e%[C%\e%[2D%\e%[B  %\e%[3A"
 set "[3]=   %\e%[3D%\e%[B%\e%[2C %\e%[3D%\e%[B%\e%[C  %\e%[3D%\e%[B   %\e%[3A"
-set "[4]= ² %\e%[3D%\e%[B ² %\e%[3D%\e%[B   %\e%[3D%\e%[B%\e%[2C %\e%[3A"
+set "[4]= â–“ %\e%[3D%\e%[B â–“ %\e%[3D%\e%[B   %\e%[3D%\e%[B%\e%[2C %\e%[3A"
 set "[5]=  %\e%[2D%\e%[B %\e%[C%\e%[2D%\e%[B%\e%[C %\e%[2D%\e%[B  %\e%[3A"
 set "[6]= %\e%[2C%\e%[3D%\e%[B   %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B   %\e%[3A"
-set "[7]=   %\e%[3D%\e%[B%\e%[2C %\e%[3D%\e%[B²² %\e%[3D%\e%[B²² %\e%[3A"
+set "[7]=   %\e%[3D%\e%[B%\e%[2C %\e%[3D%\e%[Bâ–“â–“ %\e%[3D%\e%[Bâ–“â–“ %\e%[3A"
 set "[8]=   %\e%[3D%\e%[B   %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B   %\e%[3A"
 set "[9]=   %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B   %\e%[3D%\e%[B%\e%[2C %\e%[3A"
 set "[0]=   %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B %\e%[C %\e%[3D%\e%[B   %\e%[3A"
