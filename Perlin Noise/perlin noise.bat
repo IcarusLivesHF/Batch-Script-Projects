@@ -11,7 +11,7 @@ call :init
 
 
 rem HEY USER! LOOK HERE ---------------------------------------------------------------------------------
-rem           \world,heat,grayscale,fire,night,radiation,rainbow,infrared,sunset,aurora,galaxy,magic
+rem           \world,heat,grayscale,fire,night,radiation,rainbow,infrared,sunset,aurora,galaxy,magic,sky,bio,
 call mapvalues\world
 
 
@@ -114,8 +114,8 @@ set "map=PONMLKJIHGFEDBCA9876543210"
 rem some dependencies
 set "@rnd(x,y)=(((^!random^! * 32768 + ^!random^!) %% (y - x + 1)) + x)"
 set "@constrain=(l=x-lo, t=x-(l&(l>>31)), h=hi-t, t+=(h&(h>>31)))" & rem constrain X between lo and hi
-set "@lerp=((b - a) * (c - 1)) / 99 + a"                           & rem lerp a to b by c(0-100)
-set "@smoothStep=((3*10000*x*x) - (2*x*x*x))/10000000"
+set "@lerp=((b - a) * (c - 1)) / 999 + a"                           & rem lerp a to b by c(0-100)
+set "@smoothStep=((3*1000*x*x) - (2*x*x*x))/1000000"
 set "@lss=(((x-y)>>31)&1)"
 
 rem switchMap is a summation of booleans; each time a boolean is true, it equals 1, so it will add 1, otherwise it is 0
@@ -127,9 +127,8 @@ REM https://en.wikipedia.org/wiki/Perlin_noise
 REM https://rtouti.github.io/graphics/perlin-noise-algorithm
 REM %@perlin% x*resolution y*resolution X/resolution Y/resolution X+resolution Y+resolution landLevel <rtn> !$perlin! approximate range: (-127 to 127 + %%~7)
 set @perlin=for %%# in (1 2) do if %%#==2 ( for /f "tokens=1-7" %%A in ("^!args^!") do (%\n%
-	rem * 17 + 11 is hardcoded because it is where I found the best resolutionults forcing wx,wy to be between 0-100%\n%
-	set /a "x=%%A * 17 + 11, wx=%@smoothStep%",^
-		   "x=%%B * 17 + 11, wy=%@smoothStep%",^
+	set /a "x=%%A * 100, wx=%@smoothStep%",^
+		   "x=%%B * 100, wy=%@smoothStep%",^
 		   "ac=%%A - %%C, bd=%%B - %%D, ae=%%A - %%E, bf=%%B - %%F"%\n%
 	for /f "tokens=1-8" %%1 in ("^![%%C][%%D]^! ^![%%E][%%D]^! ^![%%C][%%F]^! ^![%%E][%%F]^!") do (%\n%
 		set /a "a=(ac * %%1 + bd * %%2) /10000",^
