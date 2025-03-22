@@ -10,32 +10,22 @@ for /l %%# in () do (
 
 	for /l %%i in (1,1,%stars%) do (
 	
-		set /a "tz[%%i]-=speed"
+		set /a "tz[%%i]-=speed[%%i]"
+		
 		if !tz[%%i]! lss 1 (
-			set /a "tz[%%i]=wid",^
-			       "x=-wid, y=wid, tx[%%i]=%rnd(x,y)%",^
+			set /a "x=-wid, y=wid, tx[%%i]=%rnd(x,y)%",^
 				   "x=-hei, y=hei, ty[%%i]=%rnd(x,y)%",^
-				   "pz[%%i]=tz[%%i]",^
+				                  "tz[%%i]=wid",^
+				   "x=10, y=40, speed[%%i]=%rnd(x,y)%",^
 				   "color[%%i]=!random! %% 14"
 		)
 		
-		set /a "sx[%%i]=(wid/2) + (range * tx[%%i] / tz[%%i])",^
-		       "sy[%%i]=(hei/2) + (range * ty[%%i] / tz[%%i])",^
-		       "px[%%i]=(wid/2) + (range * ty[%%i] / pz[%%i])",^
-		       "py[%%i]=(hei/2) + (range * ty[%%i] / pz[%%i])",^
-			   "pz[%%i]=tz[%%i]",^
+		set /a "sx[%%i]=(wid/2) + range * tx[%%i] / tz[%%i]",^
+		       "sy[%%i]=(hei/2) + range * ty[%%i] / tz[%%i]",^
 			   "r=15 + -15 * tz[%%i] / wid"
 		
-		if !px[%%i]! gtr 0 if !px[%%i]! lss %wid% (
-			if !py[%%i]! gtr 0 if !py[%%i]! lss %hei% (
-				if !sx[%%i]! gtr 0 if !sx[%%i]! lss %wid% (
-					if !sy[%%i]! gtr 0 if !sy[%%i]! lss %hei% (
-						for %%r in (!r!) do (
-							set "field=!field!%\e%[48;5;!color[%%i]!m%\e%[!sy[%%i]!;!sx[%%i]!H!circle[%%r]!"
-						)
-					)
-				)
-			)
+		if !sx[%%i]! gtr 0 if !sx[%%i]! lss %wid% if !sy[%%i]! gtr 0 if !sy[%%i]! lss %hei% for %%r in (!r!) do (
+			set "field=!field!%\e%[48;5;!color[%%i]!m%\e%[!sy[%%i]!;!sx[%%i]!H!circle[%%r]!"
 		)
 		
 	)
@@ -119,13 +109,13 @@ set "stars=20"
 
 set "range=200"
 
-set /a "x=10, y=20, speed=%rnd(x,y)%"
+set /a "x=10, y=40, speed=%rnd(x,y)%"
 
 for /l %%i in (1,1,%stars%) do (
 	set /a "x=-wid, y=wid, tx[%%i]=%rnd(x,y)%"
 	set /a "x=-hei, y=hei, ty[%%i]=%rnd(x,y)%"
 	set /a "x=0,    y=wid, tz[%%i]=%rnd(x,y)%"
-	set /a "pz[%%i]=tz[%%i]"
+	set /a "x=10, y=40, speed[%%i]=%rnd(x,y)%"
 	set /a "color[%%i]=!random! %% 14"
 )
 
