@@ -1,6 +1,6 @@
 @echo off & setlocal enableDelayedExpansion
 
-call :Set_Font "mxplus ibm ega 8x8" 1 nomax %1 || exit
+call :Set_Font "lucida console" 1 nomax %1 || exit
 
 call :init
 
