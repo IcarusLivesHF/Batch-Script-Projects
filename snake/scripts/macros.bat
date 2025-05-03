@@ -15,6 +15,9 @@ set "hsl(n)="
 
 
 
+set @getTimeCS=for /f "tokens=1-4 delims=:.," %%a in ("^!time: =0^!") do set /a "?=(((1%%a*60)+1%%b)*60+1%%c)*100+1%%d"
+
+
 
 
 set "newSnake=(snakeX=(^!random^! %% (wid / scl)) * scl + 1, snakeY=(^!random^! %% (hei / scl)) * scl+ 1)"

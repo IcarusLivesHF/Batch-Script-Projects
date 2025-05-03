@@ -2,12 +2,14 @@
 
 if "%~1" neq "" goto :%~1
 
-call scripts\intro
 call lib\atlas 100 100
 call lib\radish
 call scripts\macros 
 call scripts\init
 call scripts\sprites
+if "!skipIntro!" neq "true" (
+	call scripts\intro
+)
 
 ( %radish% "%~nx0" radish_wait ) & exit
 :radish_wait
@@ -18,20 +20,16 @@ rem ------------------------------------------------------------------------
 
 
 
-
-
-
-
-
 :reset
 set /a "%newSnake%, %newFood%"
 
-for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do set /a "t1=(((1%%a*60)+1%%b)*60+1%%c)*100+1%%d-36610100"
+
+%@getTimeCS:?=t1%
 %while% (
-	for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do set /a "t2=(((1%%a*60)+1%%b)*60+1%%c)*100+1%%d-36610100, dt=t2-t1"
+	%@getTimeCS:?=t2%, "deltaTime=t2-t1"
 	
-	if !dt! gtr 6 (
-		title !total!
+	if !deltaTime! gtr 6 (
+		title [ESC] to QUIT   ^|   Score: !total!
 
 		%@radish%
 		
@@ -126,11 +124,10 @@ rem %radish_end%
 
 set /a "animationDuration=50 * 1000"
 
-for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do set /a "t1=(((1%%a*60)+1%%b)*60+1%%c)*100+1%%d-36610100"
+%@getTimeCS:?=t1%
 for /l %%i in (1,1,%animationDuration%) do (
-	for /f "tokens=1-4 delims=:.," %%a in ("!time: =0!") do set /a "t2=(((1%%a*60)+1%%b)*60+1%%c)*100+1%%d-36610100, dt=t2-t1"
-	
-	if !dt! gtr 8 (
+	%@getTimeCS:?=t2%, "deltaTime=t2-t1"
+	if !deltaTime! gtr 8 (
 		set /a "t1=t2, frames=%%i %% 4"
 		title !frames!
 		for %%f in (!frames!) do <nul set /p "=%\e%[!prevY!;!prevX!H!dead[%%f]!"
