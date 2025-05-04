@@ -23,3 +23,5 @@ set @getTimeCS=for /f "tokens=1-4 delims=:.," %%a in ("^!time: =0^!") do set /a 
 set "newSnake=(snakeX=(^!random^! %% (wid / scl)) * scl + 1, snakeY=(^!random^! %% (hei / scl)) * scl+ 1)"
 
 set "newFood=(foodX=(^!random^! %% (wid / scl)) * scl+ 1, foodY=(^!random^! %% (hei / scl)) * scl+ 1)"
+
+set "growSnake=(grow=1, total+=1, fadeAmount=255 / (total + 1))"
