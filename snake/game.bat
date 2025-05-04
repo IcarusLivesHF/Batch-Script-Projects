@@ -132,16 +132,10 @@ set /a "%newSnake%, %newFood%"
 
 
 :GameOver
-cls
 title GameOver
 
-rem clean up
 for %%i in ( tail_ xSpeed ySpeed) do set "%%i="
-
-set "iter=0"
-rem %radish_end%
-
-set /a "animationDuration=50 * 1000"
+set /a "iter=0", "animationDuration=50 * 1000"
 
 %@getTimeCS:?=t1%
 for /l %%i in (1,1,%animationDuration%) do (
@@ -151,4 +145,27 @@ for /l %%i in (1,1,%animationDuration%) do (
 		for %%f in (!frames!) do <nul set /p "=%\e%[2J%\e%[!prevY!;!prevX!H!dead[%%f]!"
 	)
 )
-goto :reset
+
+:loop
+	%@radish%
+	
+	title !keysPressed! !mouseX! !MouseY!
+
+	set /a "a=19, b=59, c=45, d=66, e=mouseX, f=mouseY, hoverYes=%pointRect%, clickedYes=hoverYes & L_click",^
+		   "a=59, b=59, c=79, d=66,                      hoverNo=%pointRect%,  clickedNo=hoverNo  & L_click"
+	
+	if !hoverYes! equ 1 ( set "highlightYes=38;2;32;32;32;48;2;0;180;255"
+	) else                set "highlightYes=38;2;255;255;255;48;2;11;11;11"
+	
+	if !hoverNo! equ 1 (  set "highlightNo=38;2;40;0;0;48;2;255;144;144"
+	) else                set "highlightNo=38;2;255;255;255;48;2;11;11;11"
+	
+	if !clickedYes! equ 1 (
+		goto :reset
+	) else if !clickedNo! equ 1 (
+		%radish_end%
+		exit
+	)
+	
+	echo %\e%[2J%\e%[30;15H%gameOverButton%%\e%[40;26H%playAgainButton%%\e%[!highlightYes!m%\e%[60;20H%yesButton%%\e%[!highlightNo!m%\e%[60;60H%noButton%%\e%[m
+goto :loop

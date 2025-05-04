@@ -19,6 +19,8 @@ set @getTimeCS=for /f "tokens=1-4 delims=:.," %%a in ("^!time: =0^!") do set /a 
 
 
 
+set "pointRect=((~(f-b)>>31)&1) & ((~(d-f)>>31)&1) & ((~(e-a)>>31)&1) & ((~(c-e)>>31)&1)"
+
 
 set "newSnake=(snakeX=(^!random^! %% (wid / scl)) * scl + 1, snakeY=(^!random^! %% (hei / scl)) * scl+ 1)"
 
