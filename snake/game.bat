@@ -49,7 +49,7 @@ set /a "%newSnake%, %newFood%"
 				)
 			) else set /a "MIN_FRAME_INTERVAL_CS+=1"
 		)
-		title [ESC] to QUIT   ^|   Score: !total!   ^|   FPS: !FPS!:!MIN_FRAME_INTERVAL_CS!    !keysPressed!
+		title [ESC] to QUIT   ^|   Score: !total!   ^|   FPS: !FPS!/%targetFPS%:[!MIN_FRAME_INTERVAL_CS!]
 		
 		
 		if defined keysPressed (
@@ -143,8 +143,6 @@ for /l %%i in (1,1,%animationDuration%) do (
 
 :loop
 	%@radish%
-	
-	title !keysPressed! !mouseX! !MouseY! !flag!
 
 	set /a "a=19, b=59, c=45, d=66, e=mouseX, f=mouseY, hoverYes=%pointRect%, clickedYes=hoverYes & L_click",^
 		   "a=59, b=59, c=79, d=66,                      hoverNo=%pointRect%,  clickedNo=hoverNo  & L_click"
@@ -155,12 +153,8 @@ for /l %%i in (1,1,%animationDuration%) do (
 	if !hoverNo! equ 1 (  set "highlightNo=38;2;40;0;0;48;2;255;144;144"
 	) else                set "highlightNo=38;2;255;255;255;48;2;11;11;11"  & rem Red  hover highlight
 	
-	if !clickedYes! equ 1 (
-		goto :reset
-	) else if !clickedNo! equ 1 (
-		%radish_end%
-		exit
-	)
+	       if !clickedYes! equ 1 ( goto :reset
+	) else if !clickedNo!  equ 1 ((%radish_end%) & exit)
 	
 	echo %\e%[2J%\e%[30;15H%gameOverButton%%\e%[40;26H%playAgainButton%%\e%[!highlightYes!m%\e%[60;20H%yesButton%%\e%[!highlightNo!m%\e%[60;60H%noButton%%\e%[m
 goto :loop
