@@ -58,28 +58,23 @@ set /a "%newSnake%, %newFood%"
 			%asyncKeys:?=50% set /a "%growSnake%" & rem Press 2 to grow snake. Must be moving otherwise you will collide with yourself resulting in GameOver
 		
 			set /a "i=!keysPressed:-=! - 37"
-			for %%i in (!i!) do set "newDir=!directionMap:~%%i,1!"
-			
-			if "!newDir!" neq "x" (
-				if "!newDir!"=="0" if not "!ySpeed!"=="1"  set "direction=0"
-				if "!newDir!"=="1" if not "!xSpeed!"=="-1" set "direction=1"
-				if "!newDir!"=="2" if not "!xSpeed!"=="1"  set "direction=2"
-				if "!newDir!"=="3" if not "!ySpeed!"=="-1" set "direction=3"
-				
-					   if !direction! equ 0 ( set /a "xSpeed=0,  ySpeed=-1"
-				) else if !direction! equ 1 ( set /a "xSpeed=1,  ySpeed=0"
-				) else if !direction! equ 2 ( set /a "xSpeed=-1, ySpeed=0"
-				) else if !direction! equ 3 ( set /a "xSpeed=0,  ySpeed=1"
+			for %%i in (!i!) do if "!directionMap:~%%i,1!" neq "x" (
+				       if "!directionMap:~%%i,1!"=="0" (
+					if not "!ySpeed!"=="1"  set /a "xSpeed=0,  ySpeed=-1"
+				) else if "!directionMap:~%%i,1!"=="1" (
+					if not "!xSpeed!"=="-1" set /a "xSpeed=1,  ySpeed=0"
+				) else if "!directionMap:~%%i,1!"=="2" (
+					if not "!xSpeed!"=="1"  set /a "xSpeed=-1, ySpeed=0"
+				) else if "!directionMap:~%%i,1!"=="3" (
+					if not "!ySpeed!"=="-1" set /a "xSpeed=0,  ySpeed=1"
 				)
 			)
 		)
-		
 		
 		       if !snakeX! lss 0     ( %endwhile% & goto :GameOver
 		) else if !snakeX! gtr !wid!   %endwhile% & goto :GameOver
 		       if !snakeY! lss 0     ( %endwhile% & goto :GameOver
 		) else if !snakeY! gtr !hei!   %endwhile% & goto :GameOver
-		
 		
 		if !snakeX! equ !foodX! if !snakeY! equ !foodY! (
 			set /a "%newFood%, %growSnake%"
@@ -149,16 +144,16 @@ for /l %%i in (1,1,%animationDuration%) do (
 :loop
 	%@radish%
 	
-	title !keysPressed! !mouseX! !MouseY!
+	title !keysPressed! !mouseX! !MouseY! !flag!
 
 	set /a "a=19, b=59, c=45, d=66, e=mouseX, f=mouseY, hoverYes=%pointRect%, clickedYes=hoverYes & L_click",^
 		   "a=59, b=59, c=79, d=66,                      hoverNo=%pointRect%,  clickedNo=hoverNo  & L_click"
 	
-	if !hoverYes! equ 1 ( set "highlightYes=38;2;32;32;32;48;2;0;180;255"
+	if !hoverYes! equ 1 ( set "highlightYes=38;2;32;32;32;48;2;0;180;255"   & rem Blue hover highlight
 	) else                set "highlightYes=38;2;255;255;255;48;2;11;11;11"
 	
 	if !hoverNo! equ 1 (  set "highlightNo=38;2;40;0;0;48;2;255;144;144"
-	) else                set "highlightNo=38;2;255;255;255;48;2;11;11;11"
+	) else                set "highlightNo=38;2;255;255;255;48;2;11;11;11"  & rem Red  hover highlight
 	
 	if !clickedYes! equ 1 (
 		goto :reset
