@@ -3,7 +3,7 @@ set "skipIntro=false"
 set "scl=4" & rem 1 - 4, can go higher, but not really recommended
 if %scl% lss 1 set "scl=1"
 
-set "style=1" & rem 0 or 1
+
 
 set "targetFPS=15"
 set "MIN_FRAME_INTERVAL_CS=5"

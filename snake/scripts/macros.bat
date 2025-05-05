@@ -1,3 +1,5 @@
+set "rnd(x,y)=(((^!random^! * 32768 + ^!random^!) %% (y - x + 1)) + x)"
+
 rem %@fillRect% w h color <rtn> !$fillRect!
 set @fillRect=for %%# in (1 2) do if %%#==2 ( for /f "tokens=1-3" %%1 in ("^!args^!") do (%\n%
     if "%%~3" neq "" ( set "$fillrect=%\e%[48;5;%%~3m" ) else set "$fillrect=%\e%[48;5;15m"%\n%
@@ -22,8 +24,8 @@ set @getTimeCS=for /f "tokens=1-4 delims=:.," %%a in ("^!time: =0^!") do set /a 
 set "pointRect=((~(f-b)>>31)&1) & ((~(d-f)>>31)&1) & ((~(e-a)>>31)&1) & ((~(c-e)>>31)&1)"
 
 
-set "newSnake=(snakeX=(^!random^! %% (wid / scl)) * scl + 1, snakeY=(^!random^! %% (hei / scl)) * scl+ 1)"
+set "newSnake=(snakeX=(^!random^! %% (wid / scl)) * scl + 1, snakeY=(^!random^! %% (hei / scl)) * scl + 1)"
 
-set "newFood=(foodX=(^!random^! %% (wid / scl)) * scl+ 1, foodY=(^!random^! %% (hei / scl)) * scl+ 1)"
+set "newFood=(foodX=(^!random^! %% (wid / scl)) * scl + 1, foodY=(^!random^! %% (hei / scl)) * scl + 1)"
 
 set "growSnake=(grow=1, total+=1, fadeAmount=255 / (total + 1))"

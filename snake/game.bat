@@ -43,13 +43,13 @@ set /a "%newSnake%, %newFood%"
 		if !totalDT! GEQ 100 (
 			set /a "fps=frameCount * 100 / totalDT, frameCount=totalDT=0"
 			
-			if !fps! lss %targetFPS% (
+			if !fps! leq %targetFPS% (
 				if !MIN_FRAME_INTERVAL_CS! gtr 0 (
 					set /a "MIN_FRAME_INTERVAL_CS-=1"
 				)
 			) else set /a "MIN_FRAME_INTERVAL_CS+=1"
 		)
-		title [ESC] to QUIT   ^|   Score: !total!   ^|   FPS: !FPS!/%targetFPS%:[!MIN_FRAME_INTERVAL_CS!]
+		title [ESC] to QUIT   ^|   Score: !total!   ^|   FPS: !FPS!/%targetFPS%:[!MIN_FRAME_INTERVAL_CS!] !throttle!
 		
 		
 		if defined keysPressed (
@@ -130,10 +130,13 @@ set /a "%newSnake%, %newFood%"
 title GameOver
 
 for %%i in ( tail_ xSpeed ySpeed) do set "%%i="
-set /a "iter=0", "animationDuration=50 * 1000"
+
+set /a "iter=total=0",^
+       "seconds=3, animationDuration=seconds * 10000"
 
 %@getTimeCS:?=t1%
 for /l %%i in (1,1,%animationDuration%) do (
+title !time!
 	%@getTimeCS:?=t2%, "deltaTime=t2-t1"
 	if !deltaTime! gtr 10 (
 		set /a "t1=t2, frames=%%i %% 4"
