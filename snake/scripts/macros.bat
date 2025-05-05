@@ -1,5 +1,3 @@
-set "rnd(x,y)=(((^!random^! * 32768 + ^!random^!) %% (y - x + 1)) + x)"
-
 rem %@fillRect% w h color <rtn> !$fillRect!
 set @fillRect=for %%# in (1 2) do if %%#==2 ( for /f "tokens=1-3" %%1 in ("^!args^!") do (%\n%
     if "%%~3" neq "" ( set "$fillrect=%\e%[48;5;%%~3m" ) else set "$fillrect=%\e%[48;5;15m"%\n%

@@ -49,7 +49,7 @@ set /a "%newSnake%, %newFood%"
 				)
 			) else set /a "MIN_FRAME_INTERVAL_CS+=1"
 		)
-		title [ESC] to QUIT   ^|   Score: !total!   ^|   FPS: !FPS!/%targetFPS%:[!MIN_FRAME_INTERVAL_CS!] !throttle!
+		title [ESC] to QUIT   ^|   Score: !total!   ^|   FPS: !FPS!/%targetFPS%:[!MIN_FRAME_INTERVAL_CS!]
 		
 		
 		if defined keysPressed (
