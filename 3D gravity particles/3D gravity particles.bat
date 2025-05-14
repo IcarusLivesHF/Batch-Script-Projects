@@ -137,5 +137,4 @@ for /l %%i in (1,1,%maxSpeed%) do (
 	set "circle[%%i]=!$fillCircle:%\e%[48;5;15m=!"
 )
 
-echo !circle[3]!>out.txt
 goto :eof
