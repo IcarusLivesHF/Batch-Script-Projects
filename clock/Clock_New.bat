@@ -108,19 +108,4 @@ set @circle=for %%# in (1 2) do if %%#==2 ( for /f "tokens=1-4" %%1 in ("^!args^
 	)%\n%
 	set "$circle=^!$circle^!%\e%[0m"%\n%
 )) else set args=
-
-rem number sprites 3x4
-set "[1]=[C [2D[B  [2D[B▓ [2D[B▓ [3A"
-set "[2]=  [2D[B[C [2D[B [C[2D[B  [3A"
-set "[3]=   [3D[B[2C [3D[B[C  [3D[B   [3A"
-set "[4]= ▓ [3D[B ▓ [3D[B   [3D[B[2C [3A"
-set "[5]=  [2D[B [C[2D[B[C [2D[B  [3A"
-set "[6]= [2C[3D[B   [3D[B [C [3D[B   [3A"
-set "[7]=   [3D[B[2C [3D[B▓▓ [3D[B▓▓ [3A"
-set "[8]=   [3D[B   [3D[B [C [3D[B   [3A"
-set "[9]=   [3D[B [C [3D[B   [3D[B[2C [3A"
-set "[0]=   [3D[B [C [3D[B [C [3D[B   [3A"
-set "[]=[C"
-set "[.]=[3C[C[3D[B[C [C[3D[B[3C[3D[B[C [C[3A"
-
 goto :eof
