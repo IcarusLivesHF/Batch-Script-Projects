@@ -7,6 +7,9 @@ rem RESOURCES/REFERENCES:
 rem https://discord.com/channels/288498150145261568/866440127320817684/1353357227884544010
 rem https://web.archive.org/web/20250512110825/http://www.romancortes.com/blog/1k-rose/
 rem https://www.youtube.com/watch?v=YsGeMIpEcY4 
+rem
+rem Inspired by Einstein1969
+rem     https://discord.com/channels/288498150145261568/1344806447925563504/1344806447925563504
 rem  
 rem ===================================================================
 
